@@ -8,7 +8,7 @@ const App = () => {
     const [username, setUsername] = useState('');
     const [guess, setGuess] = useState(Array(10).fill(''));
     const [feedback, setFeedback] = useState([]);
-    const [status, setStatus] = useState('not-logged-in');
+    const [status, setStatus] = useState('logged-in');
     const [attemptsLeft, setAttemptsLeft] = useState(3);
 
     useEffect(() => {
@@ -29,8 +29,8 @@ const App = () => {
     const handleSubmit = () => {
         axios.post(`${BACKEND_URL}/guess`, { guess }, { withCredentials: true })
             .then((res) => {
-                if (res.data.status === 'success') setStatus('success');
-                else if (res.data.status === 'game-over') setStatus('game-over');
+                if (res.data.status == 'success') setStatus('success');
+                else if (res.data.status == 'game-over') setStatus('game-over');
                 else {
                     setFeedback(res.data.result);
                     setAttemptsLeft(res.data.attemptsLeft);
@@ -39,7 +39,7 @@ const App = () => {
             .catch((err) => alert(err.response.data.message));
     };
 
-    if (status === 'not-logged-in') {
+    if (status == 'not-logged-in') {
         return (
             <div>
                 <h1>Code Cracker Game</h1>
@@ -49,11 +49,11 @@ const App = () => {
         );
     }
 
-    if (status === 'game-over') {
+    if (status == 'game-over') {
         return <h1>Game Over</h1>;
     }
 
-    if (status === 'success') {
+    if (status == 'success') {
         return <h1>Congratulations! You cracked the code!</h1>;
     }
 
