@@ -20,6 +20,7 @@ app.use(
         cookie: { 
 		    secure: process.env.NODE_ENV === 'production', // Secure cookies only in production
             httpOnly: true, // Prevent access from JavaScript
+			sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Allow cross-site cookies in production
             maxAge: 600000, // Cookie expiration time (10 minutes)
 		},
     })
