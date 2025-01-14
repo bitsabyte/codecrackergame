@@ -19,7 +19,7 @@ app.use(cors({
 }));
 app.use(
     session({
-        secret: process.env.SESSION_SECRET || 'defaultsecret',
+        secret: process.env.SESSION_SECRET || 'secretstuff!',
         resave: false,
         saveUninitialized: true,
         cookie: { 
@@ -50,6 +50,7 @@ app.post('/login', (req, res) => {
     }
 
     req.session.username = username;
+	console.log(req.session.username);
     if (!req.session.attempts) {
         req.session.attempts = 3;
     }
