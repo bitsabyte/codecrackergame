@@ -4,11 +4,19 @@ import axios from 'axios';
 const BACKEND_URL = "https://codecrackergamebackend.onrender.com";
 axios.defaults.withCredentials = true;
 
+axios.interceptors.request.use((config) => {
+    console.log('Request Config:', config);
+    return config;
+}, (error) => {
+    console.error('Request Error:', error);
+    return Promise.reject(error);
+});
+
 const App = () => {
     const [username, setUsername] = useState('');
     const [guess, setGuess] = useState(Array(10).fill(''));
     const [feedback, setFeedback] = useState([]);
-    const [status, setStatus] = useState('logged-in');
+    const [status, setStatus] = useState('not-logged-in');
     const [attemptsLeft, setAttemptsLeft] = useState(3);
 
     useEffect(() => {

@@ -5,7 +5,12 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001; 
+
+app.use((req, res, next) => {
+    console.log('Session:', req.session);
+    next();
+});
 
 app.use(bodyParser.json());
 app.use(cors({
@@ -21,7 +26,6 @@ app.use(
 		    secure: process.env.NODE_ENV === 'production', // Secure cookies only in production
             httpOnly: true, // Prevent access from JavaScript
 			sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Allow cross-site cookies in production
-            maxAge: 600000, // Cookie expiration time (10 minutes)
 		},
     })
 );
