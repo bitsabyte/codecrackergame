@@ -50,7 +50,7 @@ app.post('/login', (req, res) => {
     }
 
     req.session.username = username;
-	console.log(req.session.username);
+	console.log('Session initialized:', req.session);
     if (!req.session.attempts) {
         req.session.attempts = 3;
     }
