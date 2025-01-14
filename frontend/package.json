@@ -2,10 +2,10 @@
   "name": "code-cracker-frontend",
   "version": "1.0.0",
   "dependencies": {
-	  "react": "^18.0.0",
-	  "react-dom": "^18.0.0",
-	  "react-scripts": "^5.0.1",
-	  "axios": "^0.27.2"
+    "axios": "^0.27.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
