@@ -22,11 +22,11 @@ app.use(
         secret: process.env.SESSION_SECRET || 'secretstuff!',
         resave: false,
         saveUninitialized: true,
-        cookie: { 
-		    secure: process.env.NODE_ENV === 'production', // Secure cookies only in production
-            httpOnly: true, // Prevent access from JavaScript
-			sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Allow cross-site cookies in production
-		},
+        cookie: {
+			secure: process.env.NODE_ENV === 'production', // Secure cookies require HTTPS
+			httpOnly: true, // Prevent access from JavaScript
+			sameSite: 'None', // Required for cross-site cookies
+},
     })
 );
 
