@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const BACKEND_URL = "https://codecrackergamebackend.onrender.com";
+axios.defaults.withCredentials = true;
+export default axios.create({
+    baseURL: BACKEND_URL,
+    withCredentials: true,
+});
 
 const App = () => {
     const [username, setUsername] = useState('');

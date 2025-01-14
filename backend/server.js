@@ -17,7 +17,11 @@ app.use(
         secret: process.env.SESSION_SECRET || 'defaultsecret',
         resave: false,
         saveUninitialized: true,
-        cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 600000 },
+        cookie: { 
+		    secure: process.env.NODE_ENV === 'production', // Secure cookies only in production
+            httpOnly: true, // Prevent access from JavaScript
+            maxAge: 600000, // Cookie expiration time (10 minutes)
+		},
     })
 );
 
