@@ -1,16 +1,9 @@
+
+// Updated App.js to use JWTs for authentication
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const BACKEND_URL = "https://codecrackergamebackend.onrender.com";
-axios.defaults.withCredentials = true;
-
-axios.interceptors.request.use((config) => {
-    console.log('Request Config:', config);
-    return config;
-}, (error) => {
-    console.error('Request Error:', error);
-    return Promise.reject(error);
-});
 
 const App = () => {
     const [username, setUsername] = useState('');
@@ -18,50 +11,60 @@ const App = () => {
     const [feedback, setFeedback] = useState([]);
     const [status, setStatus] = useState('not-logged-in');
     const [attemptsLeft, setAttemptsLeft] = useState(3);
+    const [token, setToken] = useState(null);
 
     useEffect(() => {
-        axios.get(`${BACKEND_URL}/status`, { withCredentials: true })
-            .then((res) => setStatus(res.data.status))
-            .catch(() => setStatus('not-logged-in'));
-    }, []);
+        if (token) {
+            axios.get(`${BACKEND_URL}/status`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+                .then((res) => setStatus(res.data.status))
+                .catch(() => setStatus('not-logged-in'));
+        }
+    }, [token]);
 
     const handleLogin = () => {
-        axios.post(`${BACKEND_URL}/login`, { username }, { withCredentials: true })
+        axios.post(`${BACKEND_URL}/login`, { username })
             .then((res) => {
-                setAttemptsLeft(res.data.attemptsLeft);
+                setToken(res.data.token);
                 setStatus('in-progress');
             })
             .catch((err) => alert(err.response.data.message));
     };
 
     const handleSubmit = () => {
-        axios.post(`${BACKEND_URL}/guess`, { guess }, { withCredentials: true })
+        axios.post(`${BACKEND_URL}/guess`, { guess }, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
             .then((res) => {
-                if (res.data.status == 'success') setStatus('success');
-                else if (res.data.status == 'game-over') setStatus('game-over');
+                if (res.data.status === 'success') setStatus('success');
                 else {
                     setFeedback(res.data.result);
-                    setAttemptsLeft(res.data.attemptsLeft);
                 }
             })
             .catch((err) => alert(err.response.data.message));
     };
 
-    if (status == 'not-logged-in') {
+    if (status === 'not-logged-in') {
         return (
             <div>
                 <h1>Code Cracker Game</h1>
-                <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+                <input
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                />
                 <button onClick={handleLogin}>Login</button>
             </div>
         );
     }
 
-    if (status == 'game-over') {
+    if (status === 'game-over') {
         return <h1>Game Over</h1>;
     }
 
-    if (status == 'success') {
+    if (status === 'success') {
         return <h1>Congratulations! You cracked the code!</h1>;
     }
 
@@ -70,11 +73,16 @@ const App = () => {
             <h1>Attempts Left: {attemptsLeft}</h1>
             <div>
                 {guess.map((digit, index) => (
-                    <input key={index} maxLength="1" value={digit} onChange={(e) => {
-                        const newGuess = [...guess];
-                        newGuess[index] = e.target.value;
-                        setGuess(newGuess);
-                    }} />
+                    <input
+                        key={index}
+                        maxLength="1"
+                        value={digit}
+                        onChange={(e) => {
+                            const newGuess = [...guess];
+                            newGuess[index] = e.target.value;
+                            setGuess(newGuess);
+                        }}
+                    />
                 ))}
             </div>
             <button onClick={handleSubmit}>Submit</button>

@@ -1,38 +1,59 @@
+
+// Updated server.js to use JWTs for authentication
 const express = require('express');
 const bodyParser = require('body-parser');
-const session = require('express-session');
+const jwt = require('jsonwebtoken');
 const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3001; 
-
-app.use((req, res, next) => {
-    console.log('Session:', req.session);
-    next();
-});
+const PORT = process.env.PORT || 3001;
+const SECRET_KEY = process.env.SESSION_SECRET || 'secretstuff!';
 
 app.use(bodyParser.json());
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
 }));
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET || 'secretstuff!',
-        resave: false,
-        saveUninitialized: true,
-        cookie: {
-			secure: process.env.NODE_ENV === 'production', // Secure cookies require HTTPS
-			httpOnly: true, // Prevent access from JavaScript
-			sameSite: 'None', // Required for cross-site cookies
-},
-    })
-);
 
-let adminPassword = '1234567890';
+let adminPassword = '1234567890'; // Default admin password
 
-app.post('/set-password', (req, res) => {
+// Generate a JWT token
+function generateToken(username) {
+    return jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
+}
+
+// Middleware to authenticate requests using JWT
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) return res.status(403).send({ message: 'Access denied. Token missing.' });
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.status(403).send({ message: 'Invalid token.' });
+        req.user = user; // Attach user information to the request
+        next();
+    });
+}
+
+// Login endpoint
+app.post('/login', (req, res) => {
+    const { username } = req.body;
+
+    if (!username) {
+        return res.status(400).send({ message: 'Username is required' });
+    }
+
+    const token = generateToken(username);
+    res.status(200).send({
+        message: `Welcome, ${username}!`,
+        token,
+    });
+});
+
+// Set password endpoint (admin only)
+app.post('/set-password', authenticateToken, (req, res) => {
     const { password } = req.body;
     if (password && password.length === 10) {
         adminPassword = password;
@@ -42,37 +63,13 @@ app.post('/set-password', (req, res) => {
     }
 });
 
-app.post('/login', (req, res) => {
-    const { username } = req.body;
-
-    if (!username) {
-        return res.status(400).send({ message: 'Username is required' });
-    }
-
-    req.session.username = username;
-	console.log('Session initialized:', req.session);
-    if (!req.session.attempts) {
-        req.session.attempts = 3;
-    }
-
-    res.status(200).send({
-        message: `Welcome, ${username}!`,
-        attemptsLeft: req.session.attempts,
-    });
-});
-
-app.post('/guess', (req, res) => {
+// Guess endpoint
+app.post('/guess', authenticateToken, (req, res) => {
     const { guess } = req.body;
 
-    if (!req.session.username) {
+    if (!req.user || !req.user.username) {
         return res.status(403).send({ message: 'Please log in first.' });
     }
-
-    if (req.session.attempts <= 0) {
-        return res.status(403).send({ message: 'No attempts left.', status: 'game-over' });
-    }
-
-    req.session.attempts--;
 
     const result = adminPassword.split('').map((digit, index) => {
         if (guess[index] === digit) return 'green';
@@ -82,28 +79,15 @@ app.post('/guess', (req, res) => {
     const isSuccess = result.every((color) => color === 'green');
 
     if (isSuccess) {
-        req.session.isWinner = true;
         return res.status(200).send({ message: 'Correct code!', status: 'success', result });
     }
 
-    if (req.session.attempts <= 0) {
-        return res.status(403).send({ message: 'No attempts left.', status: 'game-over' });
-    }
-
-    res.status(200).send({ result, attemptsLeft: req.session.attempts, status: 'in-progress' });
+    res.status(200).send({ result, status: 'in-progress' });
 });
 
-app.get('/status', (req, res) => {
-    if (!req.session.username) {
-        return res.status(403).send({ status: 'not-logged-in' });
-    }
-    if (req.session.isWinner) {
-        return res.status(200).send({ status: 'success' });
-    }
-    if (req.session.attempts <= 0) {
-        return res.status(200).send({ status: 'game-over' });
-    }
-    res.status(200).send({ status: 'in-progress', attemptsLeft: req.session.attempts });
+// Server status endpoint
+app.get('/status', authenticateToken, (req, res) => {
+    res.status(200).send({ status: 'in-progress', message: 'Session is active' });
 });
 
 app.listen(PORT, () => {
