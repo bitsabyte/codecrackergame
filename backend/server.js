@@ -1,5 +1,5 @@
 
-// Updated server.js to use JWTs for authentication
+// Updated server.js with JWT and attempt tracking
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
@@ -19,8 +19,8 @@ app.use(cors({
 let adminPassword = '1234567890'; // Default admin password
 
 // Generate a JWT token
-function generateToken(username) {
-    return jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
+function generateToken(username, attempts) {
+    return jwt.sign({ username, attempts }, SECRET_KEY, { expiresIn: '1h' });
 }
 
 // Middleware to authenticate requests using JWT
@@ -45,7 +45,7 @@ app.post('/login', (req, res) => {
         return res.status(400).send({ message: 'Username is required' });
     }
 
-    const token = generateToken(username);
+    const token = generateToken(username, 3); // Start with 3 attempts
     res.status(200).send({
         message: `Welcome, ${username}!`,
         token,
@@ -71,6 +71,8 @@ app.post('/guess', authenticateToken, (req, res) => {
         return res.status(403).send({ message: 'Please log in first.' });
     }
 
+    const remainingAttempts = req.user.attempts - 1;
+
     const result = adminPassword.split('').map((digit, index) => {
         if (guess[index] === digit) return 'green';
         return 'red';
@@ -82,7 +84,17 @@ app.post('/guess', authenticateToken, (req, res) => {
         return res.status(200).send({ message: 'Correct code!', status: 'success', result });
     }
 
-    res.status(200).send({ result, status: 'in-progress' });
+    if (remainingAttempts <= 0) {
+        return res.status(403).send({ message: 'No attempts left.', status: 'game-over' });
+    }
+
+    const newToken = generateToken(req.user.username, remainingAttempts);
+    res.status(200).send({
+        result,
+        attemptsLeft: remainingAttempts,
+        status: 'in-progress',
+        token: newToken, // Return updated token
+    });
 });
 
 // Server status endpoint
