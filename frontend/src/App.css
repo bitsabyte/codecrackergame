@@ -1,0 +1,46 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: url('/vault_background.webp') no-repeat center center fixed;
+    background-size: cover;
+    opacity: 0.25;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    text-align: center;
+    padding: 20px;
+}
+
+.attempts {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.code-entry {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.code-entry input {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.code-entry button {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.logout {
+    margin-top: 20px;
+    font-size: 16px;
+}

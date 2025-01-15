@@ -1,7 +1,7 @@
-
-// Updated App.js to use JWTs with attempt tracking
+// Updated App.js with persistent JWT storage and layout
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './App.css';
 
 const BACKEND_URL = "https://codecrackergamebackend.onrender.com";
 
@@ -14,20 +14,27 @@ const App = () => {
     const [token, setToken] = useState(null);
 
     useEffect(() => {
-        if (token) {
+        const savedToken = localStorage.getItem('token');
+        if (savedToken) {
+            setToken(savedToken);
             axios.get(`${BACKEND_URL}/status`, {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${savedToken}` },
             })
                 .then((res) => setStatus(res.data.status))
-                .catch(() => setStatus('not-logged-in'));
+                .catch(() => {
+                    setStatus('not-logged-in');
+                    localStorage.removeItem('token');
+                });
         }
-    }, [token]);
+    }, []);
 
     const handleLogin = () => {
         axios.post(`${BACKEND_URL}/login`, { username })
             .then((res) => {
                 setToken(res.data.token);
                 setStatus('in-progress');
+                setAttemptsLeft(res.data.attemptsLeft);
+                localStorage.setItem('token', res.data.token);
             })
             .catch((err) => alert(err.response.data.message));
     };
@@ -44,16 +51,25 @@ const App = () => {
                 } else {
                     setFeedback(res.data.result);
                     setAttemptsLeft(res.data.attemptsLeft);
-                    setToken(res.data.token); // Update the token with remaining attempts
+                    setToken(res.data.token);
+                    localStorage.setItem('token', res.data.token);
                 }
             })
             .catch((err) => alert(err.response.data.message));
     };
 
+    const handleLogout = () => {
+        if (window.confirm("Are you sure you want to log out?")) {
+            setToken(null);
+            setStatus('not-logged-in');
+            localStorage.removeItem('token');
+        }
+    };
+
     return (
-        <div>
+        <div className="app-container">
             {status === 'not-logged-in' && (
-                <div>
+                <div className="login-container">
                     <h1>Code Cracker Game</h1>
                     <input
                         type="text"
@@ -65,12 +81,12 @@ const App = () => {
                 </div>
             )}
 
-            {status === 'game-over' && <h1>Game Over</h1>}
-            {status === 'success' && <h1>Congratulations! You cracked the code!</h1>}
+            {status === 'game-over' && <h1 className="game-over">Game Over</h1>}
+            {status === 'success' && <h1 className="success">Congratulations! You cracked the code!</h1>}
             {status === 'in-progress' && (
-                <div>
-                    <h1>Attempts Left: {attemptsLeft}</h1>
-                    <div>
+                <div className="game-container">
+                    <div className="attempts">Attempts Left: {attemptsLeft}</div>
+                    <div className="code-entry">
                         {guess.map((digit, index) => (
                             <input
                                 key={index}
@@ -86,8 +102,9 @@ const App = () => {
                                 }}
                             />
                         ))}
+                        <button onClick={handleSubmit}>Submit</button>
                     </div>
-                    <button onClick={handleSubmit}>Submit</button>
+                    <button className="logout" onClick={handleLogout}>Logout</button>
                 </div>
             )}
         </div>
