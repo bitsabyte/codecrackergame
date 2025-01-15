@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
+import backgroundImage from './assets/vault_background.webp';
 
 const BACKEND_URL = "https://codecrackergamebackend.onrender.com";
 
@@ -67,7 +68,7 @@ const App = () => {
     };
 
     return (
-        <div className="app-container">
+        <div className="app-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
             {status === 'not-logged-in' && (
                 <div className="login-container">
                     <h1>Code Cracker Game</h1>
