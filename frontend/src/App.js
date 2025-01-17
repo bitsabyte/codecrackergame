@@ -1,3 +1,4 @@
+// Updated App.js with login placeholder, Enter key login, and updated button text
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -87,6 +88,12 @@ const App = () => {
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleLogin(); // Trigger the login function
+        }
+    };
+
     const handleLogin = () => {
         if (!username) {
             setErrorMessage('Username is required');
@@ -106,39 +113,39 @@ const App = () => {
             });
     };
 
-const handleSubmit = () => {
-    axios.post(`${BACKEND_URL}/guess`, { guess }, {
-        headers: { Authorization: `Bearer ${token}` },
-    })
-        .then((res) => {
-            if (res.data.status === 'success') {
-                setStatus('success');
-                setRemainingTime(res.data.remainingTime || 0);
-                localStorage.removeItem('token');
-                setGuess(Array(10).fill(''));
-                setFeedback(Array(10).fill('green'));
-            } else if (res.data.status === 'game-over') {
-                setStatus('game-over');
-                setRemainingTime(0);
-                localStorage.removeItem('token'); // End session
-            } else {
-                setFeedback(res.data.result);
-                setAttemptsLeft(res.data.attemptsLeft);
-                setToken(res.data.token);
-                setRemainingTime(res.data.remainingTime || remainingTime);
-                localStorage.setItem('token', res.data.token);
-            }
+    const handleSubmit = () => {
+        axios.post(`${BACKEND_URL}/guess`, { guess }, {
+            headers: { Authorization: `Bearer ${token}` },
         })
-        .catch((err) => {
-            if (err.response && err.response.status === 403 && err.response.data.status === 'game-over') {
-                setStatus('game-over');
-                setRemainingTime(0);
-                localStorage.removeItem('token'); // End session
-            } else {
-                console.error('Unexpected error:', err);
-            }
-        });
-};
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    setStatus('success');
+                    setRemainingTime(res.data.remainingTime || 0);
+                    localStorage.removeItem('token');
+                    setGuess(Array(10).fill(''));
+                    setFeedback(Array(10).fill('green'));
+                } else if (res.data.status === 'game-over') {
+                    setStatus('game-over');
+                    setRemainingTime(0);
+                    localStorage.removeItem('token'); // End session
+                } else {
+                    setFeedback(res.data.result); // Update feedback for digit correctness
+                    setAttemptsLeft(res.data.attemptsLeft);
+                    setToken(res.data.token);
+                    setRemainingTime(res.data.remainingTime || remainingTime);
+                    localStorage.setItem('token', res.data.token);
+                }
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 403 && err.response.data.status === 'game-over') {
+                    setStatus('game-over');
+                    setRemainingTime(0);
+                    localStorage.removeItem('token'); // End session
+                } else {
+                    console.error('Unexpected error:', err);
+                }
+            });
+    };
 
     const handleLogout = () => {
         setToken(null);
@@ -182,9 +189,10 @@ const handleSubmit = () => {
                     <h1>Find the Campaign</h1>
                     <input
                         type="text"
-                        placeholder="Username"
+                        placeholder="Super hero team name"
                         value={username}
                         onChange={handleUsernameChange}
+                        onKeyPress={handleKeyPress} // Trigger login on Enter
                         style={{
                             borderRadius: '4px',
                             padding: '10px',
@@ -197,7 +205,9 @@ const handleSubmit = () => {
                         padding: '10px 20px',
                         margin: '10px',
                         cursor: 'pointer',
-                    }}>Login</button>
+                    }}>
+                        Start Deciphering
+                    </button>
                 </div>
             )}
 
@@ -258,8 +268,8 @@ const handleSubmit = () => {
                         borderRadius: '20px',
                         padding: '10px 20px',
                         position: 'absolute',
-                        bottom: '10px',
-                        left: '10px',
+                        top: '50px',
+                        right: '50px',
                         cursor: 'pointer',
                     }}>Logout</button>
                 </div>
