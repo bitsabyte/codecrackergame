@@ -39,6 +39,16 @@ body::before {
     color: inherit;
 }
 
+/* Center Container */
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    gap: 20px; /* Add spacing between elements */
+    width: 60%; /* Match width of .code-entry and .timer-bar-container */
+    margin: 0 auto; /* Center container on the screen */
+}
+
 /* Login Styles */
 .login-container input {
     width: 300px; /* Larger size for better visibility */
@@ -89,13 +99,11 @@ body::before {
 
 /* Timer Bar */
 .timer-bar-container {
-    width: 60%; /* Match the width of the digit input boxes and submit button */
+    width: 100%; /* Match the width of the parent container */
     height: 20px;
     background-color: #ddd;
     border-radius: 10px;
-    margin: 20px auto; /* Add spacing around the bar */
     overflow: hidden;
-    position: relative;
     display: flex;
 }
 
@@ -119,21 +127,20 @@ body::before {
     justify-content: center; /* Center items horizontally */
     align-items: center; /* Center items vertically */
     gap: 1%; /* Dynamically scale gaps between inputs */
-    margin-bottom: 20px;
-    width: 60%; /* Match the progress bar width */
+    width: 100%; /* Match the parent container width */
 }
 
 .code-entry input {
-    flex: 1; /* Each input dynamically scales */
-    font-size: calc(1.5vw + 1vh); /* Dynamically scale font size */
+    flex: 1;
+    font-size: calc(1.5vw + 1vh);
     text-align: center;
     background-color: white;
     color: black;
     border: 2px solid gray;
     border-radius: 50%; /* Fully rounded corners */
     transition: border-color 0.3s ease, color 0.3s ease;
-    height: calc(5vh); /* Keep square shape */
-    width: calc(5vh); /* Ensure width equals height for square inputs */
+    height: calc(5vh);
+    width: calc(5vh); /* Keep inputs square */
 }
 
 .code-entry input.correct {

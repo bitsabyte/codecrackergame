@@ -1,3 +1,4 @@
+// Updated App.js with aligned elements using center-container
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -77,22 +78,22 @@ const App = () => {
     }, [status, token]);
 
     const handleUsernameChange = (e) => {
-		const value = e.target.value;
-		if (/^[a-zA-Z0-9 ]*$/.test(value)) {
-			setUsername(value);
-			setErrorMessage('');
-		} else {
-			setErrorMessage('Only alphanumeric characters and spaces are allowed.');
-		}
-	};
+        const value = e.target.value;
+        if (/^[a-zA-Z0-9 ]*$/.test(value)) { // Allow alphanumeric and spaces
+            setUsername(value);
+            setErrorMessage('');
+        } else {
+            setErrorMessage('Only alphanumeric characters and spaces are allowed.');
+        }
+    };
 
     const handleLogin = () => {
-        if (!username) {
+        if (!username.trim()) {
             setErrorMessage('Username is required');
             return;
         }
 
-        axios.post(`${BACKEND_URL}/login`, { username })
+        axios.post(`${BACKEND_URL}/login`, { username: username.trim() })
             .then((res) => {
                 setToken(res.data.token);
                 setStatus('in-progress');
@@ -164,40 +165,13 @@ const App = () => {
     return (
         <div className={`app-container ${status === 'game-over' ? 'game-over' : 'in-progress'}`}>
             {status === 'in-progress' && (
-                <div className="timer-bar-container">
-                    <div
-                        className={`timer-bar ${getProgressBarClass(calculateProgress(remainingTime))}`}
-                        style={{ width: `${calculateProgress(remainingTime)}%` }}
-                    ></div>
-                </div>
-            )}
-
-            {status === 'not-logged-in' && (
-                <div className="login-container">
-					<h1>Find the Campaign</h1>
-					<input
-						type="text"
-						placeholder="Super hero team name"
-						value={username}
-						onChange={handleUsernameChange}
-					/>
-					<button onClick={handleLogin}>
-						Start Deciphering
-					</button>
-					{errorMessage && <div className="error-message">{errorMessage}</div>}
-				</div>
-            )}
-
-            {status === 'game-over' && (
-                <h1>Game Over - You failed to find the code in 3 attempts or the time ran out</h1>
-            )}
-
-            {status === 'success' && (
-                <h1 className="success">Congratulations! You cracked the code with {Math.floor(remainingTime / 60)}:{String(remainingTime % 60).padStart(2, '0')} left!</h1>
-            )}
-
-            {status === 'in-progress' && (
-                <div className="game-container">
+                <div className="center-container">
+                    <div className="timer-bar-container">
+                        <div
+                            className={`timer-bar ${getProgressBarClass(calculateProgress(remainingTime))}`}
+                            style={{ width: `${calculateProgress(remainingTime)}%` }}
+                        ></div>
+                    </div>
                     <div className="attempts">Attempts Left: {attemptsLeft}</div>
                     <div className="code-entry">
                         {guess.map((digit, index) => (
@@ -213,9 +187,34 @@ const App = () => {
                         ))}
                         <button onClick={handleSubmit}>🗝</button>
                     </div>
-                    <button className="logout" onClick={handleLogout}>Logout</button>
                 </div>
             )}
+
+            {status === 'not-logged-in' && (
+                <div className="login-container">
+                    <h1>Find the Campaign</h1>
+                    <input
+                        type="text"
+                        placeholder="Super hero team name"
+                        value={username}
+                        onChange={handleUsernameChange}
+                    />
+                    {errorMessage && <div className="error-message">{errorMessage}</div>}
+                    <button onClick={handleLogin}>
+                        Start Deciphering
+                    </button>
+                </div>
+            )}
+
+            {status === 'game-over' && (
+                <h1>Game Over - You failed to find the code in 3 attempts or the time ran out</h1>
+            )}
+
+            {status === 'success' && (
+                <h1 className="success">Congratulations! You cracked the code with {Math.floor(remainingTime / 60)}:{String(remainingTime % 60).padStart(2, '0')} left!</h1>
+            )}
+
+            <button className="logout" onClick={handleLogout}>Logout</button>
         </div>
     );
 };
