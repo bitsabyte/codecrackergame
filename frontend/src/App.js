@@ -106,39 +106,39 @@ const App = () => {
             });
     };
 
-    const handleSubmit = () => {
-        axios.post(`${BACKEND_URL}/guess`, { guess }, {
-            headers: { Authorization: `Bearer ${token}` },
+const handleSubmit = () => {
+    axios.post(`${BACKEND_URL}/guess`, { guess }, {
+        headers: { Authorization: `Bearer ${token}` },
+    })
+        .then((res) => {
+            if (res.data.status === 'success') {
+                setStatus('success');
+                setRemainingTime(res.data.remainingTime || 0);
+                localStorage.removeItem('token');
+                setGuess(Array(10).fill(''));
+                setFeedback(Array(10).fill('green'));
+            } else if (res.data.status === 'game-over') {
+                setStatus('game-over');
+                setRemainingTime(0);
+                localStorage.removeItem('token'); // End session
+            } else {
+                setFeedback(res.data.result);
+                setAttemptsLeft(res.data.attemptsLeft);
+                setToken(res.data.token);
+                setRemainingTime(res.data.remainingTime || remainingTime);
+                localStorage.setItem('token', res.data.token);
+            }
         })
-            .then((res) => {
-                if (res.data.status === 'success') {
-                    setStatus('success');
-                    setRemainingTime(res.data.remainingTime || 0);
-                    localStorage.removeItem('token');
-                    setGuess(Array(10).fill(''));
-                    setFeedback(Array(10).fill('green'));
-                } else if (res.data.status === 'game-over') {
-                    setStatus('game-over');
-                    setRemainingTime(0);
-                    localStorage.removeItem('token'); // End session
-                } else {
-                    setFeedback(res.data.result); // Update feedback for digit correctness
-                    setAttemptsLeft(res.data.attemptsLeft);
-                    setToken(res.data.token);
-                    setRemainingTime(res.data.remainingTime || remainingTime);
-                    localStorage.setItem('token', res.data.token);
-                }
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 403 && err.response.data.status === 'game-over') {
-                    setStatus('game-over');
-                    setRemainingTime(0);
-                    localStorage.removeItem('token'); // End session
-                } else {
-                    console.error('Unexpected error:', err);
-                }
-            });
-    };
+        .catch((err) => {
+            if (err.response && err.response.status === 403 && err.response.data.status === 'game-over') {
+                setStatus('game-over');
+                setRemainingTime(0);
+                localStorage.removeItem('token'); // End session
+            } else {
+                console.error('Unexpected error:', err);
+            }
+        });
+};
 
     const handleLogout = () => {
         setToken(null);

@@ -71,6 +71,15 @@ app.post('/guess', authenticateToken, checkTimer, (req, res) => {
         return res.status(403).send({ message: 'Please log in first.' });
     }
 
+    // Timer expiration takes priority
+    if (req.remainingTime === 0) {
+        return res.status(403).send({
+            message: 'Time is up!',
+            status: 'game-over',
+            remainingTime: 0,
+        });
+    }
+
     const result = adminPassword.split('').map((digit, index) => {
         if (guess[index] === digit) return 'green';
         return 'red';
@@ -90,7 +99,11 @@ app.post('/guess', authenticateToken, checkTimer, (req, res) => {
     req.user.attempts -= 1;
 
     if (req.user.attempts <= 0) {
-        return res.status(403).send({ message: 'No attempts left.', status: 'game-over', remainingTime: Math.ceil(req.remainingTime / 1000) });
+        return res.status(403).send({
+            message: 'No attempts left.',
+            status: 'game-over',
+            remainingTime: Math.ceil(req.remainingTime / 1000),
+        });
     }
 
     const newToken = generateToken(req.user.username, req.user.attempts, req.user.startTime);
