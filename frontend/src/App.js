@@ -1,4 +1,3 @@
-// Updated App.js with progress bar width matching digit inputs and button
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -175,18 +174,18 @@ const App = () => {
 
             {status === 'not-logged-in' && (
                 <div className="login-container">
-                    <h1>Find the Campaign</h1>
-                    <input
-                        type="text"
-                        placeholder="Super hero team name"
-                        value={username}
-                        onChange={handleUsernameChange}
-                    />
-                    {errorMessage && <div className="error-message">{errorMessage}</div>}
-                    <button onClick={handleLogin}>
-                        Start Deciphering
-                    </button>
-                </div>
+					<h1>Find the Campaign</h1>
+					<input
+						type="text"
+						placeholder="Super hero team name"
+						value={username}
+						onChange={handleUsernameChange}
+					/>
+					<button onClick={handleLogin}>
+						Start Deciphering
+					</button>
+					{errorMessage && <div className="error-message">{errorMessage}</div>}
+				</div>
             )}
 
             {status === 'game-over' && (

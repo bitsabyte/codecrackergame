@@ -160,3 +160,12 @@ body::before {
     color: black;
     border: 1px solid black;
 }
+
+/* Error Message Styling */
+.error-message {
+    margin-top: 10px; /* Add spacing from the button */
+    font-size: 18px; /* Slightly smaller text */
+    font-weight: bold; /* Make it stand out */
+    color: red; /* Red for error indication */
+    text-align: center;
+}
