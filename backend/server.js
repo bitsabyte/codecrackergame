@@ -1,4 +1,4 @@
-// Updated server.js with correct attempts handling and game-over logic
+// Updated server.js with correct timer and session handling for game-over state
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
@@ -106,8 +106,10 @@ app.post('/guess', authenticateToken, checkTimer, (req, res) => {
 
 // Status endpoint
 app.get('/status', authenticateToken, checkTimer, (req, res) => {
+    const status = req.user.attempts > 0 && req.remainingTime > 0 ? 'in-progress' : 'game-over';
+
     res.status(200).send({
-        status: req.user.attempts > 0 ? 'in-progress' : 'game-over',
+        status,
         remainingTime: Math.ceil(req.remainingTime / 1000),
         attemptsLeft: req.user.attempts,
         message: 'Session is active',

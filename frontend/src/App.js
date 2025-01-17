@@ -1,4 +1,3 @@
-// Updated App.js with auto-select text, digit border/text color, and game-over fix
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -56,15 +55,21 @@ const App = () => {
                         setRemainingTime(res.data.remainingTime || 0);
                         setAttemptsLeft(res.data.attemptsLeft || 0);
 
-                        if (res.data.remainingTime <= 0 || res.data.status === 'game-over') {
+                        if (res.data.status === 'game-over') {
                             setStatus('game-over');
                             clearInterval(interval);
+                            localStorage.removeItem('token'); // End session
                         }
                     })
-                    .catch(() => {
+                    .catch((err) => {
                         clearInterval(interval);
-                        setStatus('not-logged-in');
-                        localStorage.removeItem('token');
+                        if (err.response && err.response.status === 403 && err.response.data.status === 'game-over') {
+                            setStatus('game-over');
+                            localStorage.removeItem('token'); // End session
+                        } else {
+                            setStatus('not-logged-in');
+                            localStorage.removeItem('token');
+                        }
                     });
             }, 5000);
 
@@ -101,37 +106,39 @@ const App = () => {
             });
     };
 
-const handleSubmit = () => {
-    axios.post(`${BACKEND_URL}/guess`, { guess }, {
-        headers: { Authorization: `Bearer ${token}` },
-    })
-        .then((res) => {
-            if (res.data.status === 'success') {
-                setStatus('success');
-                setRemainingTime(res.data.remainingTime || 0);
-                localStorage.removeItem('token'); // Clear token for next player
-                setGuess(Array(10).fill('')); // Clear guess input
-                setFeedback(Array(10).fill('green'));
-            } else if (res.data.status === 'game-over') {
-                setStatus('game-over');
-                setRemainingTime(0);
-            } else {
-                setFeedback(res.data.result); // Update feedback for digit correctness
-                setAttemptsLeft(res.data.attemptsLeft);
-                setToken(res.data.token);
-                setRemainingTime(res.data.remainingTime || remainingTime);
-                localStorage.setItem('token', res.data.token);
-            }
+    const handleSubmit = () => {
+        axios.post(`${BACKEND_URL}/guess`, { guess }, {
+            headers: { Authorization: `Bearer ${token}` },
         })
-        .catch((err) => {
-            if (err.response && err.response.status === 403 && err.response.data.status === 'game-over') {
-                setStatus('game-over'); // Transition to game-over
-                setRemainingTime(0);
-            } else {
-                console.error('An unexpected error occurred:', err);
-            }
-        });
-};
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    setStatus('success');
+                    setRemainingTime(res.data.remainingTime || 0);
+                    localStorage.removeItem('token');
+                    setGuess(Array(10).fill(''));
+                    setFeedback(Array(10).fill('green'));
+                } else if (res.data.status === 'game-over') {
+                    setStatus('game-over');
+                    setRemainingTime(0);
+                    localStorage.removeItem('token'); // End session
+                } else {
+                    setFeedback(res.data.result); // Update feedback for digit correctness
+                    setAttemptsLeft(res.data.attemptsLeft);
+                    setToken(res.data.token);
+                    setRemainingTime(res.data.remainingTime || remainingTime);
+                    localStorage.setItem('token', res.data.token);
+                }
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 403 && err.response.data.status === 'game-over') {
+                    setStatus('game-over');
+                    setRemainingTime(0);
+                    localStorage.removeItem('token'); // End session
+                } else {
+                    console.error('Unexpected error:', err);
+                }
+            });
+    };
 
     const handleLogout = () => {
         setToken(null);
@@ -251,7 +258,8 @@ const handleSubmit = () => {
                         borderRadius: '20px',
                         padding: '10px 20px',
                         position: 'absolute',
-                        bottom: '20px',
+                        bottom: '10px',
+                        left: '10px',
                         cursor: 'pointer',
                     }}>Logout</button>
                 </div>
