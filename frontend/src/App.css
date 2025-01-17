@@ -1,16 +1,15 @@
-/* Background with gradient overlay and parallax effect */
+/* Background with static image and gradient overlay */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: 
-        linear-gradient(270deg, rgba(255, 0, 0, 0.5), rgba(255, 255, 0, 0.5), rgba(0, 255, 0, 0.5), rgba(0, 0, 255, 0.5)), 
-        url('https://via.placeholder.com/1920x1080'); /* Replace with your image URL */
-    background-attachment: fixed; /* Enable parallax effect */
+        linear-gradient(270deg, rgba(255, 0, 0, 0.25), rgba(255, 255, 0, 0.25), rgba(0, 255, 0, 0.25), rgba(0, 0, 255, 0.25)), 
+        url('https://i.imgur.com/8WPh5Xl.png'); /* Background image */
     background-size: cover; /* Cover the viewport */
     background-position: center; /* Center the image */
     background-blend-mode: overlay; /* Blend gradient and image */
     height: 100vh;
-    background-repeat: no-repeat;
+    background-repeat: no-repeat; /* Ensure no tiling */
 }
 
 /* Container styling */
