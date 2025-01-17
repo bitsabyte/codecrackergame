@@ -1,4 +1,3 @@
-// Updated App.js with improved game-over screen, login reset, retries fix, and timeout handling
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -38,22 +37,6 @@ const App = () => {
                 });
         }
     }, []);
-
-    useEffect(() => {
-        if (remainingTime > 0 && status === 'in-progress') {
-            const interval = setInterval(() => {
-                setRemainingTime((time) => {
-                    if (time - 1 <= 0) {
-                        clearInterval(interval);
-                        setStatus('game-over');
-                        return 0;
-                    }
-                    return time - 1;
-                });
-            }, 1000);
-            return () => clearInterval(interval);
-        }
-    }, [remainingTime, status]);
 
     const handleLogin = () => {
         axios.post(`${BACKEND_URL}/login`, { username })
