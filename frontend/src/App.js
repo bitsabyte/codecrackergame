@@ -14,10 +14,16 @@ const App = () => {
     const [remainingTime, setRemainingTime] = useState(0);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const formatTime = (timeInSeconds) => {
-        const minutes = Math.floor(timeInSeconds / 60);
-        const seconds = timeInSeconds % 60;
-        return `${minutes} : ${seconds.toString().padStart(2, '0')}`;
+    const calculateProgress = (time) => {
+        const totalTime = 600; // Total timer duration in seconds (10 minutes)
+        const percentage = Math.max(0, (time / totalTime) * 100);
+        return percentage;
+    };
+
+    const getProgressColor = (percentage) => {
+        if (percentage > 50) return 'green';
+        if (percentage > 20) return 'orange';
+        return 'red';
     };
 
     useEffect(() => {
@@ -59,7 +65,7 @@ const App = () => {
                         setStatus('not-logged-in');
                         localStorage.removeItem('token');
                     });
-            }, 3000);
+            }, 5000);
 
             return () => clearInterval(interval);
         }
@@ -158,12 +164,26 @@ const App = () => {
                 <h1>Game Over - You failed to find the code in 3 attempts or the time ran out</h1>
             )}
             {status === 'success' && (
-                <h1 className="success">Congratulations! You cracked the code with {formatTime(remainingTime)} left!</h1>
+                <h1 className="success">Congratulations! You cracked the code with {Math.ceil((remainingTime / 600) * 100)}% time left!</h1>
             )}
             {status === 'in-progress' && (
                 <div className="game-container">
                     <div className="attempts">Attempts Left: {attemptsLeft}</div>
-                    <div className="timer" style={{ fontWeight: 'bold', fontSize: '24px' }}>Time Remaining: {formatTime(remainingTime)}</div>
+                    <div className="timer-bar" style={{
+                        width: '80%',
+                        height: '20px',
+                        backgroundColor: '#ddd',
+                        borderRadius: '10px',
+                        overflow: 'hidden',
+                        margin: '10px auto',
+                    }}>
+                        <div style={{
+                            width: `${calculateProgress(remainingTime)}%`,
+                            height: '100%',
+                            backgroundColor: getProgressColor(calculateProgress(remainingTime)),
+                            transition: 'width 1s ease, background-color 1s ease',
+                        }}></div>
+                    </div>
                     <div className="code-entry">
                         {guess.map((digit, index) => (
                             <input
