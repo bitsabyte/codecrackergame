@@ -1,5 +1,4 @@
-
-// Updated server.js with JWT and attempt tracking
+// Updated server.js to support backend timer logic
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
@@ -19,8 +18,8 @@ app.use(cors({
 let adminPassword = '1234567890'; // Default admin password
 
 // Generate a JWT token
-function generateToken(username, attempts) {
-    return jwt.sign({ username, attempts }, SECRET_KEY, { expiresIn: '1h' });
+function generateToken(username, attempts, startTime) {
+    return jwt.sign({ username, attempts, startTime }, SECRET_KEY, { expiresIn: '10m' });
 }
 
 // Middleware to authenticate requests using JWT
@@ -37,6 +36,19 @@ function authenticateToken(req, res, next) {
     });
 }
 
+// Middleware to check remaining time
+function checkTimer(req, res, next) {
+    const currentTime = Date.now();
+    const remainingTime = Math.max(0, 10 * 60 * 1000 - (currentTime - req.user.startTime));
+
+    if (remainingTime === 0) {
+        return res.status(403).send({ message: 'Time is up!', status: 'game-over', remainingTime: 0 });
+    }
+
+    req.remainingTime = remainingTime; // Pass the remaining time to subsequent handlers
+    next();
+}
+
 // Login endpoint
 app.post('/login', (req, res) => {
     const { username } = req.body;
@@ -45,33 +57,18 @@ app.post('/login', (req, res) => {
         return res.status(400).send({ message: 'Username is required' });
     }
 
-    const token = generateToken(username, 3); // Start with 3 attempts
-    res.status(200).send({
-        message: `Welcome, ${username}!`,
-        token,
-    });
-});
-
-// Set password endpoint (admin only)
-app.post('/set-password', authenticateToken, (req, res) => {
-    const { password } = req.body;
-    if (password && password.length === 10) {
-        adminPassword = password;
-        res.status(200).send({ message: 'Password set successfully' });
-    } else {
-        res.status(400).send({ message: 'Password must be 10 digits long' });
-    }
+    const startTime = Date.now(); // Record login time
+    const token = generateToken(username, 3, startTime);
+    res.status(200).send({ message: `Welcome, ${username}!`, token });
 });
 
 // Guess endpoint
-app.post('/guess', authenticateToken, (req, res) => {
+app.post('/guess', authenticateToken, checkTimer, (req, res) => {
     const { guess } = req.body;
 
     if (!req.user || !req.user.username) {
         return res.status(403).send({ message: 'Please log in first.' });
     }
-
-    const remainingAttempts = req.user.attempts - 1;
 
     const result = adminPassword.split('').map((digit, index) => {
         if (guess[index] === digit) return 'green';
@@ -81,25 +78,37 @@ app.post('/guess', authenticateToken, (req, res) => {
     const isSuccess = result.every((color) => color === 'green');
 
     if (isSuccess) {
-        return res.status(200).send({ message: 'Correct code!', status: 'success', result });
+        return res.status(200).send({
+            message: 'Correct code!',
+            status: 'success',
+            remainingTime: Math.ceil(req.remainingTime / 1000), // Send remaining seconds
+            result,
+        });
     }
 
-    if (remainingAttempts <= 0) {
-        return res.status(403).send({ message: 'No attempts left.', status: 'game-over' });
+    req.user.attempts -= 1;
+    const newToken = generateToken(req.user.username, req.user.attempts, req.user.startTime);
+
+    if (req.user.attempts <= 0) {
+        return res.status(403).send({ message: 'No attempts left.', status: 'game-over', remainingTime: Math.ceil(req.remainingTime / 1000) });
     }
 
-    const newToken = generateToken(req.user.username, remainingAttempts);
     res.status(200).send({
         result,
-        attemptsLeft: remainingAttempts,
+        attemptsLeft: req.user.attempts,
         status: 'in-progress',
-        token: newToken, // Return updated token
+        token: newToken,
+        remainingTime: Math.ceil(req.remainingTime / 1000),
     });
 });
 
-// Server status endpoint
-app.get('/status', authenticateToken, (req, res) => {
-    res.status(200).send({ status: 'in-progress', message: 'Session is active' });
+// Status endpoint
+app.get('/status', authenticateToken, checkTimer, (req, res) => {
+    res.status(200).send({
+        status: 'in-progress',
+        remainingTime: Math.ceil(req.remainingTime / 1000),
+        message: 'Session is active',
+    });
 });
 
 app.listen(PORT, () => {

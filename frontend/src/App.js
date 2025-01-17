@@ -1,4 +1,4 @@
-// Updated App.js with persistent JWT storage and layout
+// Updated App.js with persistent JWT storage, timer logic, and layout
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -12,6 +12,7 @@ const App = () => {
     const [status, setStatus] = useState('not-logged-in');
     const [attemptsLeft, setAttemptsLeft] = useState(3);
     const [token, setToken] = useState(null);
+    const [remainingTime, setRemainingTime] = useState(0);
 
     useEffect(() => {
         const savedToken = localStorage.getItem('token');
@@ -20,7 +21,10 @@ const App = () => {
             axios.get(`${BACKEND_URL}/status`, {
                 headers: { Authorization: `Bearer ${savedToken}` },
             })
-                .then((res) => setStatus(res.data.status))
+                .then((res) => {
+                    setStatus(res.data.status);
+                    setRemainingTime(res.data.remainingTime || 0);
+                })
                 .catch(() => {
                     setStatus('not-logged-in');
                     localStorage.removeItem('token');
@@ -28,12 +32,20 @@ const App = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (remainingTime > 0 && status === 'in-progress') {
+            const interval = setInterval(() => setRemainingTime((time) => time - 1), 1000);
+            return () => clearInterval(interval);
+        }
+    }, [remainingTime, status]);
+
     const handleLogin = () => {
         axios.post(`${BACKEND_URL}/login`, { username })
             .then((res) => {
                 setToken(res.data.token);
                 setStatus('in-progress');
                 setAttemptsLeft(res.data.attemptsLeft);
+                setRemainingTime(600); // Initialize timer on login
                 localStorage.setItem('token', res.data.token);
             })
             .catch((err) => alert(err.response.data.message));
@@ -46,12 +58,15 @@ const App = () => {
             .then((res) => {
                 if (res.data.status === 'success') {
                     setStatus('success');
+                    setRemainingTime(res.data.remainingTime || 0);
                 } else if (res.data.status === 'game-over') {
                     setStatus('game-over');
+                    setRemainingTime(0);
                 } else {
                     setFeedback(res.data.result);
                     setAttemptsLeft(res.data.attemptsLeft);
                     setToken(res.data.token);
+                    setRemainingTime(res.data.remainingTime || remainingTime);
                     localStorage.setItem('token', res.data.token);
                 }
             })
@@ -81,11 +96,16 @@ const App = () => {
                 </div>
             )}
 
-            {status === 'game-over' && <h1 className="game-over">Game Over</h1>}
-            {status === 'success' && <h1 className="success">Congratulations! You cracked the code!</h1>}
+            {status === 'game-over' && (
+                <h1 className="game-over">Game Over! Time Left: 0 seconds</h1>
+            )}
+            {status === 'success' && (
+                <h1 className="success">Congratulations! You cracked the code with {remainingTime} seconds left!</h1>
+            )}
             {status === 'in-progress' && (
                 <div className="game-container">
                     <div className="attempts">Attempts Left: {attemptsLeft}</div>
+                    <div className="timer">Time Remaining: {remainingTime} seconds</div>
                     <div className="code-entry">
                         {guess.map((digit, index) => (
                             <input
