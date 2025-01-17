@@ -1,4 +1,4 @@
-// Updated App.js with login placeholder, Enter key login, and updated button text
+// Updated App.js with all inline styles moved to App.css
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -14,18 +14,6 @@ const App = () => {
     const [token, setToken] = useState(null);
     const [remainingTime, setRemainingTime] = useState(0);
     const [errorMessage, setErrorMessage] = useState('');
-
-    const calculateProgress = (time) => {
-        const totalTime = 600; // Total timer duration in seconds (10 minutes)
-        const percentage = Math.max(0, (time / totalTime) * 100);
-        return percentage;
-    };
-
-    const getProgressColor = (percentage) => {
-        if (percentage > 50) return 'green';
-        if (percentage > 20) return 'orange';
-        return 'red';
-    };
 
     useEffect(() => {
         const savedToken = localStorage.getItem('token');
@@ -85,12 +73,6 @@ const App = () => {
             setErrorMessage('');
         } else {
             setErrorMessage('Only alphanumeric characters are allowed.');
-        }
-    };
-
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter') {
-            handleLogin(); // Trigger the login function
         }
     };
 
@@ -170,20 +152,7 @@ const App = () => {
     };
 
     return (
-        <div
-            className="app-container"
-            style={{
-                backgroundColor: status === 'game-over' ? 'red' : '#b5c7a3',
-                color: status === 'game-over' ? 'white' : 'inherit',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                textAlign: 'center',
-                flexDirection: 'column',
-                position: 'relative',
-            }}
-        >
+        <div className={`app-container ${status === 'game-over' ? 'game-over' : 'in-progress'}`}>
             {status === 'not-logged-in' && (
                 <div className="login-container">
                     <h1>Find the Campaign</h1>
@@ -192,7 +161,6 @@ const App = () => {
                         placeholder="Super hero team name"
                         value={username}
                         onChange={handleUsernameChange}
-                        onKeyPress={handleKeyPress} // Trigger login on Enter
                         style={{
                             borderRadius: '4px',
                             padding: '10px',
@@ -200,12 +168,7 @@ const App = () => {
                         }}
                     />
                     {errorMessage && <div className="error-message">{errorMessage}</div>}
-                    <button onClick={handleLogin} style={{
-                        borderRadius: '20px',
-                        padding: '10px 20px',
-                        margin: '10px',
-                        cursor: 'pointer',
-                    }}>
+                    <button onClick={handleLogin}>
                         Start Deciphering
                     </button>
                 </div>
@@ -220,21 +183,7 @@ const App = () => {
             {status === 'in-progress' && (
                 <div className="game-container">
                     <div className="attempts">Attempts Left: {attemptsLeft}</div>
-                    <div className="timer-bar" style={{
-                        width: '80%',
-                        height: '20px',
-                        backgroundColor: '#ddd',
-                        borderRadius: '10px',
-                        overflow: 'hidden',
-                        margin: '10px auto',
-                    }}>
-                        <div style={{
-                            width: `${calculateProgress(remainingTime)}%`,
-                            height: '100%',
-                            backgroundColor: getProgressColor(calculateProgress(remainingTime)),
-                            transition: 'width 1s ease, background-color 1s ease',
-                        }}></div>
-                    </div>
+                    <div className="timer-bar"></div>
                     <div className="code-entry">
                         {guess.map((digit, index) => (
                             <input
@@ -243,35 +192,13 @@ const App = () => {
                                 maxLength="1"
                                 value={digit}
                                 onChange={(e) => handleDigitInput(e, index)}
-                                style={{
-                                    backgroundColor: 'white',
-                                    color: feedback[index] === 'green' ? 'green' : feedback[index] === 'red' ? 'red' : 'black',
-                                    border: `2px solid ${feedback[index] === 'green' ? 'green' : feedback[index] === 'red' ? 'red' : 'gray'}`,
-                                    borderRadius: '4px',
-                                    width: '40px',
-                                    height: '40px',
-                                    fontSize: '20px',
-                                    textAlign: 'center',
-                                    margin: '5px',
-                                }}
+                                className={feedback[index] === 'green' ? 'correct' : feedback[index] === 'red' ? 'incorrect' : ''}
                                 onFocus={(e) => e.target.select()} // Auto-select text
                             />
                         ))}
-                        <button onClick={handleSubmit} style={{
-                            borderRadius: '20px',
-                            padding: '10px 20px',
-                            marginTop: '20px',
-                            cursor: 'pointer',
-                        }}>🗝</button>
+                        <button onClick={handleSubmit}>🗝</button>
                     </div>
-                    <button className="logout" onClick={handleLogout} style={{
-                        borderRadius: '20px',
-                        padding: '10px 20px',
-                        position: 'absolute',
-                        top: '50px',
-                        right: '50px',
-                        cursor: 'pointer',
-                    }}>Logout</button>
+                    <button className="logout" onClick={handleLogout}>Logout</button>
                 </div>
             )}
         </div>
