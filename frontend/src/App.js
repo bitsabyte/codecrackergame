@@ -1,3 +1,4 @@
+// Updated App.js with proper attempts synchronization and UI improvements
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -53,7 +54,7 @@ const App = () => {
                 })
                     .then((res) => {
                         setRemainingTime(res.data.remainingTime || 0);
-                        setAttemptsLeft(res.data.attemptsLeft || 3);
+                        setAttemptsLeft(res.data.attemptsLeft || 0);
 
                         if (res.data.remainingTime <= 0 || res.data.status === 'game-over') {
                             setStatus('game-over');
@@ -90,28 +91,28 @@ const App = () => {
             });
     };
 
-const handleSubmit = () => {
-    axios.post(`${BACKEND_URL}/guess`, { guess }, {
-        headers: { Authorization: `Bearer ${token}` },
-    })
-        .then((res) => {
-            if (res.data.status === 'success') {
-                setStatus('success');
-                setRemainingTime(res.data.remainingTime || 0);
-                localStorage.removeItem('token'); // Clear token for next player
-                setGuess(Array(10).fill('')); // Clear guess input
-            } else if (res.data.status === 'game-over') {
-                setStatus('game-over');
-                setRemainingTime(0);
-            } else {
-                setFeedback(res.data.result);
-                setAttemptsLeft(res.data.attemptsLeft);
-                setToken(res.data.token);
-                setRemainingTime(res.data.remainingTime || remainingTime);
-                localStorage.setItem('token', res.data.token);
-            }
-        });
-};
+    const handleSubmit = () => {
+        axios.post(`${BACKEND_URL}/guess`, { guess }, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    setStatus('success');
+                    setRemainingTime(res.data.remainingTime || 0);
+                    localStorage.removeItem('token'); // Clear token for next player
+                    setGuess(Array(10).fill('')); // Clear guess input
+                } else if (res.data.status === 'game-over') {
+                    setStatus('game-over');
+                    setRemainingTime(0);
+                } else {
+                    setFeedback(res.data.result);
+                    setAttemptsLeft(res.data.attemptsLeft);
+                    setToken(res.data.token);
+                    setRemainingTime(res.data.remainingTime || remainingTime);
+                    localStorage.setItem('token', res.data.token);
+                }
+            });
+    };
 
     const handleLogout = () => {
         setToken(null);
@@ -121,7 +122,7 @@ const handleSubmit = () => {
 
     const handleDigitInput = (e, index) => {
         const value = e.target.value;
-        if (/\d/.test(value) || value === '') {
+        if (/\\d/.test(value) || value === '') {
             const newGuess = [...guess];
             newGuess[index] = value;
             setGuess(newGuess);
@@ -144,6 +145,7 @@ const handleSubmit = () => {
                 height: '100vh',
                 textAlign: 'center',
                 flexDirection: 'column',
+                position: 'relative',
             }}
         >
             {status === 'not-logged-in' && (
@@ -154,9 +156,19 @@ const handleSubmit = () => {
                         placeholder="Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        style={{
+                            borderRadius: '4px',
+                            padding: '10px',
+                            marginBottom: '10px',
+                        }}
                     />
                     {errorMessage && <div className="error-message">{errorMessage}</div>}
-                    <button onClick={handleLogin}>Login</button>
+                    <button onClick={handleLogin} style={{
+                        borderRadius: '20px',
+                        padding: '10px 20px',
+                        margin: '10px',
+                        cursor: 'pointer',
+                    }}>Login</button>
                 </div>
             )}
 
@@ -164,7 +176,7 @@ const handleSubmit = () => {
                 <h1>Game Over - You failed to find the code in 3 attempts or the time ran out</h1>
             )}
             {status === 'success' && (
-                <h1 className="success">Congratulations! You cracked the code with {formatTime(remainingTime)} left!</h1>
+                <h1 className="success">Congratulations! You cracked the code with {Math.floor(remainingTime / 60)}:{String(remainingTime % 60).padStart(2, '0')} left!</h1>
             )}
             {status === 'in-progress' && (
                 <div className="game-container">
@@ -205,15 +217,19 @@ const handleSubmit = () => {
                             />
                         ))}
                         <button onClick={handleSubmit} style={{
-    borderRadius: '20px',
-    padding: '10px 20px',
-    marginTop: '20px',
-    cursor: 'pointer',
-}}>
-    🗝 Submit
-</button>
+                            borderRadius: '20px',
+                            padding: '10px 20px',
+                            marginTop: '20px',
+                            cursor: 'pointer',
+                        }}>🗝</button>
                     </div>
-                    <button className="logout" onClick={handleLogout}>Logout</button>
+                    <button className="logout" onClick={handleLogout} style={{
+                        borderRadius: '20px',
+                        padding: '10px 20px',
+                        position: 'absolute',
+                        bottom: '20px',
+                        cursor: 'pointer',
+                    }}>Logout</button>
                 </div>
             )}
         </div>

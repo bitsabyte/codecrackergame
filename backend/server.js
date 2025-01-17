@@ -1,31 +1,20 @@
-// Updated server.js with CORS restrictions, rate-limiting, and backend timer logic
+// Updated server.js with correct attempts handling and game-over logic
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const SECRET_KEY = process.env.SESSION_SECRET || 'secretstuff!';
-const FRONTEND_URL = process.env.FRONTEND_URL || 'https://codecrackergame.onrender.com';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://your-frontend.com';
 
 app.use(bodyParser.json());
-
-// CORS Configuration
 app.use(cors({
     origin: FRONTEND_URL,
     credentials: true,
 }));
-
-// Rate Limiting
-const limiter = rateLimit({
-    windowMs: 60 * 1000, // 1 minute
-    max: 60, // Limit each IP to 60 requests per minute
-    message: { message: 'Too many requests, please try again later.' },
-});
-app.use('/guess', limiter);
 
 let adminPassword = '1234567890'; // Default admin password
 
@@ -98,7 +87,7 @@ app.post('/guess', authenticateToken, checkTimer, (req, res) => {
         });
     }
 
-    req.user.attempts -= 1; // Decrement attempts
+    req.user.attempts -= 1;
 
     if (req.user.attempts <= 0) {
         return res.status(403).send({ message: 'No attempts left.', status: 'game-over', remainingTime: Math.ceil(req.remainingTime / 1000) });
@@ -118,13 +107,13 @@ app.post('/guess', authenticateToken, checkTimer, (req, res) => {
 // Status endpoint
 app.get('/status', authenticateToken, checkTimer, (req, res) => {
     res.status(200).send({
-        status: 'in-progress',
+        status: req.user.attempts > 0 ? 'in-progress' : 'game-over',
         remainingTime: Math.ceil(req.remainingTime / 1000),
+        attemptsLeft: req.user.attempts,
         message: 'Session is active',
     });
 });
 
-// Start HTTP server
 app.listen(PORT, () => {
     console.log(`Backend server is running on port ${PORT}`);
 });
