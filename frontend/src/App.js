@@ -40,18 +40,30 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        if (remainingTime > 0 && status === 'in-progress') {
+        if (status === 'in-progress') {
             const interval = setInterval(() => {
-                setRemainingTime((time) => {
-                    if (time > 0) return time - 1;
-                    setStatus('game-over');
-                    return 0;
-                });
-            }, 1000);
+                axios.get(`${BACKEND_URL}/status`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                    .then((res) => {
+                        setRemainingTime(res.data.remainingTime || 0);
+                        setAttemptsLeft(res.data.attemptsLeft || 3);
+
+                        if (res.data.remainingTime <= 0 || res.data.status === 'game-over') {
+                            setStatus('game-over');
+                            clearInterval(interval);
+                        }
+                    })
+                    .catch(() => {
+                        clearInterval(interval);
+                        setStatus('not-logged-in');
+                        localStorage.removeItem('token');
+                    });
+            }, 3000);
 
             return () => clearInterval(interval);
         }
-    }, [remainingTime, status]);
+    }, [status, token]);
 
     const handleLogin = () => {
         if (!username) {
