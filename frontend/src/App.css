@@ -31,20 +31,22 @@ body::before {
 
 /* Login Styles */
 .login-container input {
-    width: 300px; /* Increased size */
+    width: 300px;
     height: 60px;
-    font-size: 24px; /* Bigger font size */
+    font-size: 24px;
     text-align: center;
-    border-radius: 8px;
+    border-radius: 20px; /* Match logout button style */
     margin-bottom: 20px;
     border: 2px solid gray;
+    background-color: white;
+    color: black;
 }
 
 .login-container button {
-    width: 300px; /* Increased size */
+    width: 300px;
     height: 60px;
-    font-size: 24px; /* Bigger font size */
-    border-radius: 8px;
+    font-size: 24px;
+    border-radius: 20px; /* Match logout button style */
     cursor: pointer;
     background-color: white;
     color: black;
@@ -99,9 +101,10 @@ body::before {
     background-color: white;
     color: black;
     border: 2px solid gray;
-    border-radius: 4px;
+    border-radius: 50%; /* Make the corners almost circular */
     transition: border-color 0.3s ease, color 0.3s ease;
-    height: calc(5vh); /* Dynamically adjust height */
+    height: calc(5vh); /* Keep square shape */
+    width: calc(5vh); /* Ensure width equals height for square inputs */
 }
 
 .code-entry input.correct {
@@ -119,6 +122,9 @@ body::before {
     padding: 10px 20px;
     border-radius: 20px;
     cursor: pointer;
+    background-color: white;
+    color: black;
+    border: 1px solid black;
 }
 
 /* Logout Button */
