@@ -78,14 +78,14 @@ const App = () => {
     }, [status, token]);
 
     const handleUsernameChange = (e) => {
-        const value = e.target.value;
-        if (/^[a-zA-Z0-9]*$/.test(value)) {
-            setUsername(value);
-            setErrorMessage('');
-        } else {
-            setErrorMessage('Only alphanumeric characters are allowed.');
-        }
-    };
+		const value = e.target.value;
+		if (/^[a-zA-Z0-9 ]*$/.test(value)) {
+			setUsername(value);
+			setErrorMessage('');
+		} else {
+			setErrorMessage('Only alphanumeric characters and spaces are allowed.');
+		}
+	};
 
     const handleLogin = () => {
         if (!username) {
