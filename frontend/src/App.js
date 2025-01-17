@@ -215,7 +215,12 @@ const App = () => {
 			)}
 
 			{status === 'success' && (
-				<h1 className="success">Congratulations! You cracked the code with {Math.floor(remainingTime / 60)}:{String(remainingTime % 60).padStart(2, '0')} left!</h1>
+				<div className="success">
+					<h1>
+						Congratulations! You cracked the code with {Math.floor(remainingTime / 60)}:
+						{String(remainingTime % 60).padStart(2, '0')} left!
+					</h1>
+				</div>
 			)}
 
 			<button className="logout" onClick={handleLogout}>Logout</button>

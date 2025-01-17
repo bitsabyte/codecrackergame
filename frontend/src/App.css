@@ -189,3 +189,14 @@ body::before {
     color: black;
     border: 1px solid black;
 }
+
+.success {
+    background-color: green; /* Green background for success screen */
+    color: white; /* White text for better contrast */
+    text-align: center;
+    height: 100%; /* Ensure it covers the full screen */
+    width: 100%; /* Ensure it covers the full screen */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
