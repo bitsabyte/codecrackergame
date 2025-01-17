@@ -6,6 +6,10 @@ body {
     background-size: cover; /* Cover the viewport */
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Prevent tiling */
+	background-blend-mode: overlay;
+    background-size: cover;
+    margin: 0;
+}
 
 /* Container styling */
 .app-container {
