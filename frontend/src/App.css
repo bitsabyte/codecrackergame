@@ -29,13 +29,23 @@ body::before {
     position: relative;
 }
 
+.game-over {
+    background-color: red; /* Red background for game-over screen */
+    color: white; /* White text for better contrast */
+}
+
+.in-progress {
+    background-color: transparent; /* No background for in-progress */
+    color: inherit;
+}
+
 /* Login Styles */
 .login-container input {
-    width: 300px;
-    height: 60px;
-    font-size: 24px;
+    width: 300px; /* Larger size for better visibility */
+    height: 60px; /* Increased height */
+    font-size: 24px; /* Bigger font */
     text-align: center;
-    border-radius: 20px; /* Match logout button style */
+    border-radius: 50px; /* Fully rounded corners */
     margin-bottom: 20px;
     border: 2px solid gray;
     background-color: white;
@@ -43,14 +53,20 @@ body::before {
 }
 
 .login-container button {
-    width: 300px;
-    height: 60px;
-    font-size: 24px;
-    border-radius: 20px; /* Match logout button style */
+    width: 300px; /* Match size with input box */
+    height: 60px; /* Match height with input box */
+    font-size: 24px; /* Bigger font */
+    border-radius: 50px; /* Fully rounded corners */
     cursor: pointer;
     background-color: white;
     color: black;
     border: 2px solid black;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.login-container button:hover {
+    background-color: black;
+    color: white;
 }
 
 /* Attempts Styling */
@@ -139,9 +155,4 @@ body::before {
     background-color: white;
     color: black;
     border: 1px solid black;
-}
-/* Game-Over Screen */
-.game-over {
-    background-color: red; /* Red background for game-over screen */
-    color: white; /* White text for better contrast */
 }
