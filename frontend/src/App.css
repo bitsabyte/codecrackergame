@@ -3,6 +3,7 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     position: relative;
+	background-color: darkslategray;
 }
 
 body::before {
@@ -95,4 +96,28 @@ body::before {
     position: absolute;
     top: 50px;
     right: 50px;
+}
+
+.timer-bar-container {
+    width: 80%;
+    height: 20px;
+    background-color: #ddd; /* Background for the progress bar container */
+    border-radius: 10px;
+    margin: 10px auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.timer-bar {
+    height: 100%;
+    background-color: green; /* Initial progress color */
+    transition: width 1s ease, background-color 1s ease; /* Smooth width/color changes */
+}
+
+.timer-bar.low {
+    background-color: red; /* Change color when time is low */
+}
+
+.timer-bar.medium {
+    background-color: orange; /* Change color when time is medium */
 }

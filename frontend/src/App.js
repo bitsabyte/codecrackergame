@@ -1,4 +1,4 @@
-// Updated App.js with all inline styles moved to App.css
+// Updated App.js with reintroduced progress bar
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -14,6 +14,17 @@ const App = () => {
     const [token, setToken] = useState(null);
     const [remainingTime, setRemainingTime] = useState(0);
     const [errorMessage, setErrorMessage] = useState('');
+
+    const calculateProgress = (time) => {
+        const totalTime = 600; // Total timer duration in seconds (10 minutes)
+        return Math.max(0, (time / totalTime) * 100); // Calculate percentage
+    };
+
+    const getProgressBarClass = (percentage) => {
+        if (percentage < 20) return 'low'; // Red for low time
+        if (percentage < 50) return 'medium'; // Orange for medium time
+        return ''; // Green for high time
+    };
 
     useEffect(() => {
         const savedToken = localStorage.getItem('token');
@@ -153,6 +164,15 @@ const App = () => {
 
     return (
         <div className={`app-container ${status === 'game-over' ? 'game-over' : 'in-progress'}`}>
+            {status === 'in-progress' && (
+                <div className="timer-bar-container">
+                    <div
+                        className={`timer-bar ${getProgressBarClass(calculateProgress(remainingTime))}`}
+                        style={{ width: `${calculateProgress(remainingTime)}%` }}
+                    ></div>
+                </div>
+            )}
+
             {status === 'not-logged-in' && (
                 <div className="login-container">
                     <h1>Find the Campaign</h1>
@@ -177,13 +197,14 @@ const App = () => {
             {status === 'game-over' && (
                 <h1>Game Over - You failed to find the code in 3 attempts or the time ran out</h1>
             )}
+
             {status === 'success' && (
                 <h1 className="success">Congratulations! You cracked the code with {Math.floor(remainingTime / 60)}:{String(remainingTime % 60).padStart(2, '0')} left!</h1>
             )}
+
             {status === 'in-progress' && (
                 <div className="game-container">
                     <div className="attempts">Attempts Left: {attemptsLeft}</div>
-                    <div className="timer-bar"></div>
                     <div className="code-entry">
                         {guess.map((digit, index) => (
                             <input
