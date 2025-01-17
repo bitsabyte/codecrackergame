@@ -1,25 +1,19 @@
-/* Background with dynamic gradient and image overlay */
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
-}
-
+/* Background with gradient overlay and parallax effect */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: 
-      linear-gradient(270deg, rgba(255, 0, 0, 0.5), rgba(255, 255, 0, 0.5), rgba(0, 255, 0, 0.5), rgba(0, 0, 255, 0.5)), 
-      url('https://i.imgur.com/8WPh5Xl.png'); /* Replace with your image URL */
-    background-size: 800% 800%, cover;
-    background-blend-mode: overlay; /* Blend the gradient and the image */
-    animation: gradientShift 10s ease infinite;
+        linear-gradient(270deg, rgba(255, 0, 0, 0.5), rgba(255, 255, 0, 0.5), rgba(0, 255, 0, 0.5), rgba(0, 0, 255, 0.5)), 
+        url('https://via.placeholder.com/1920x1080'); /* Replace with your image URL */
+    background-attachment: fixed; /* Enable parallax effect */
+    background-size: cover; /* Cover the viewport */
+    background-position: center; /* Center the image */
+    background-blend-mode: overlay; /* Blend gradient and image */
     height: 100vh;
+    background-repeat: no-repeat;
 }
 
+/* Container styling */
 .app-container {
     display: flex;
     flex-direction: column;
