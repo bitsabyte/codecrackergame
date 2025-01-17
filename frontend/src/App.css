@@ -71,8 +71,11 @@ body::before {
 
 /* Attempts Styling */
 .attempts {
-    font-size: 24px;
+    font-size: 36px; /* Increased size for better visibility */
+    font-weight: bold; /* Bold text */
     margin-bottom: 20px;
+    color: black; /* Ensure full visibility */
+    text-align: center;
 }
 
 /* Timer Bar */
