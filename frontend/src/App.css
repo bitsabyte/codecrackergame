@@ -38,7 +38,7 @@ body::before {
 }
 
 .in-progress {
-    color: inherit;
+	background-color: transparent;
 }
 
 /* Attempts Styling */
