@@ -1,4 +1,4 @@
-// Updated App.js with proper attempts synchronization and UI improvements
+// Updated App.js with alphanumeric input protection for login and digit input fixes
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -72,6 +72,16 @@ const App = () => {
         }
     }, [status, token]);
 
+    const handleUsernameChange = (e) => {
+        const value = e.target.value;
+        if (/^[a-zA-Z0-9]*$/.test(value)) { // Only allow alphanumeric characters
+            setUsername(value);
+            setErrorMessage(''); // Clear error if valid input
+        } else {
+            setErrorMessage('Only alphanumeric characters are allowed.');
+        }
+    };
+
     const handleLogin = () => {
         if (!username) {
             setErrorMessage('Username is required');
@@ -122,7 +132,7 @@ const App = () => {
 
     const handleDigitInput = (e, index) => {
         const value = e.target.value;
-        if (/\\d/.test(value) || value === '') {
+        if (/^\d?$/.test(value)) { // Allow only single numeric characters or empty input
             const newGuess = [...guess];
             newGuess[index] = value;
             setGuess(newGuess);
@@ -155,7 +165,7 @@ const App = () => {
                         type="text"
                         placeholder="Username"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={handleUsernameChange}
                         style={{
                             borderRadius: '4px',
                             padding: '10px',
