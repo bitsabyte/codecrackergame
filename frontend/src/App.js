@@ -1,4 +1,4 @@
-// Updated App.js with title change and digit color updates
+// Updated App.js with auto-select text, digit border/text color, and game-over fix
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -133,12 +133,16 @@ const App = () => {
 
     const handleDigitInput = (e, index) => {
         const value = e.target.value;
-        if (/^\d?$/.test(value)) {
+        if (/^\d?$/.test(value)) { // Allow only single numeric characters or empty input
             const newGuess = [...guess];
             newGuess[index] = value;
             setGuess(newGuess);
             if (value !== '' && index < 9) {
-                document.getElementById(`digit-${index + 1}`).focus();
+                const nextInput = document.getElementById(`digit-${index + 1}`);
+                if (nextInput) {
+                    nextInput.focus();
+                    nextInput.select(); // Select the text for easy overwrite
+                }
             }
         }
     };
@@ -215,8 +219,9 @@ const App = () => {
                                 value={digit}
                                 onChange={(e) => handleDigitInput(e, index)}
                                 style={{
-                                    backgroundColor: feedback[index] === 'green' ? 'lightgreen' : feedback[index] === 'red' ? 'lightcoral' : 'rgba(255, 255, 255, 0.8)',
-                                    border: '1px solid rgba(0, 0, 0, 0.1)',
+                                    backgroundColor: 'white',
+                                    color: feedback[index] === 'green' ? 'green' : feedback[index] === 'red' ? 'red' : 'black',
+                                    border: `2px solid ${feedback[index] === 'green' ? 'green' : feedback[index] === 'red' ? 'red' : 'gray'}`,
                                     borderRadius: '4px',
                                     width: '40px',
                                     height: '40px',
@@ -224,6 +229,7 @@ const App = () => {
                                     textAlign: 'center',
                                     margin: '5px',
                                 }}
+                                onFocus={(e) => e.target.select()} // Auto-select text
                             />
                         ))}
                         <button onClick={handleSubmit} style={{
