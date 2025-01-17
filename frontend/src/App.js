@@ -1,4 +1,4 @@
-// Updated App.js with alphanumeric input protection for login and digit input fixes
+// Updated App.js with title change and digit color updates
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -8,7 +8,7 @@ const BACKEND_URL = "https://codecrackergamebackend.onrender.com";
 const App = () => {
     const [username, setUsername] = useState('');
     const [guess, setGuess] = useState(Array(10).fill(''));
-    const [feedback, setFeedback] = useState([]);
+    const [feedback, setFeedback] = useState(Array(10).fill(''));
     const [status, setStatus] = useState('not-logged-in');
     const [attemptsLeft, setAttemptsLeft] = useState(3);
     const [token, setToken] = useState(null);
@@ -37,7 +37,7 @@ const App = () => {
                 .then((res) => {
                     setStatus(res.data.status);
                     setRemainingTime(res.data.remainingTime || 0);
-                    setAttemptsLeft(res.data.attemptsLeft || 3); // Fetch actual attempts
+                    setAttemptsLeft(res.data.attemptsLeft || 3);
                 })
                 .catch(() => {
                     setStatus('not-logged-in');
@@ -74,9 +74,9 @@ const App = () => {
 
     const handleUsernameChange = (e) => {
         const value = e.target.value;
-        if (/^[a-zA-Z0-9]*$/.test(value)) { // Only allow alphanumeric characters
+        if (/^[a-zA-Z0-9]*$/.test(value)) {
             setUsername(value);
-            setErrorMessage(''); // Clear error if valid input
+            setErrorMessage('');
         } else {
             setErrorMessage('Only alphanumeric characters are allowed.');
         }
@@ -96,8 +96,8 @@ const App = () => {
                 setRemainingTime(600); // Initialize timer on login
                 localStorage.setItem('token', res.data.token);
                 setGuess(Array(10).fill('')); // Clear guess input on new login
-                setFeedback([]); // Clear feedback
-                setErrorMessage(''); // Clear error message
+                setFeedback(Array(10).fill('')); // Clear feedback
+                setErrorMessage('');
             });
     };
 
@@ -109,13 +109,14 @@ const App = () => {
                 if (res.data.status === 'success') {
                     setStatus('success');
                     setRemainingTime(res.data.remainingTime || 0);
-                    localStorage.removeItem('token'); // Clear token for next player
-                    setGuess(Array(10).fill('')); // Clear guess input
+                    localStorage.removeItem('token');
+                    setGuess(Array(10).fill(''));
+                    setFeedback(Array(10).fill('green'));
                 } else if (res.data.status === 'game-over') {
                     setStatus('game-over');
                     setRemainingTime(0);
                 } else {
-                    setFeedback(res.data.result);
+                    setFeedback(res.data.result); // Update feedback for digit correctness
                     setAttemptsLeft(res.data.attemptsLeft);
                     setToken(res.data.token);
                     setRemainingTime(res.data.remainingTime || remainingTime);
@@ -132,11 +133,10 @@ const App = () => {
 
     const handleDigitInput = (e, index) => {
         const value = e.target.value;
-        if (/^\d?$/.test(value)) { // Allow only single numeric characters or empty input
+        if (/^\d?$/.test(value)) {
             const newGuess = [...guess];
             newGuess[index] = value;
             setGuess(newGuess);
-            // Automatically focus on the next input
             if (value !== '' && index < 9) {
                 document.getElementById(`digit-${index + 1}`).focus();
             }
@@ -160,7 +160,7 @@ const App = () => {
         >
             {status === 'not-logged-in' && (
                 <div className="login-container">
-                    <h1>Code Cracker Game</h1>
+                    <h1>Find the Campaign</h1>
                     <input
                         type="text"
                         placeholder="Username"
@@ -215,7 +215,7 @@ const App = () => {
                                 value={digit}
                                 onChange={(e) => handleDigitInput(e, index)}
                                 style={{
-                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    backgroundColor: feedback[index] === 'green' ? 'lightgreen' : feedback[index] === 'red' ? 'lightcoral' : 'rgba(255, 255, 255, 0.8)',
                                     border: '1px solid rgba(0, 0, 0, 0.1)',
                                     borderRadius: '4px',
                                     width: '40px',
