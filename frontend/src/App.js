@@ -38,6 +38,21 @@ const App = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (remainingTime > 0 && status === 'in-progress') {
+            const interval = setInterval(() => {
+                setRemainingTime((time) => {
+                    if (time > 0) return time - 1;
+                    clearInterval(interval);
+                    setStatus('game-over');
+                    return 0;
+                });
+            }, 1000);
+
+            return () => clearInterval(interval);
+        }
+    }, [remainingTime, status]);
+
     const handleLogin = () => {
         axios.post(`${BACKEND_URL}/login`, { username })
             .then((res) => {
@@ -84,6 +99,19 @@ const App = () => {
         }
     };
 
+    const handleDigitInput = (e, index) => {
+        const value = e.target.value;
+        if (/\d/.test(value) || value === '') {
+            const newGuess = [...guess];
+            newGuess[index] = value;
+            setGuess(newGuess);
+            // Automatically focus on the next input
+            if (value !== '' && index < 9) {
+                document.getElementById(`digit-${index + 1}`).focus();
+            }
+        }
+    };
+
     return (
         <div
             className="app-container"
@@ -95,6 +123,7 @@ const App = () => {
                 alignItems: 'center',
                 height: '100vh',
                 textAlign: 'center',
+                flexDirection: 'column',
             }}
         >
             {status === 'not-logged-in' && (
@@ -124,15 +153,19 @@ const App = () => {
                         {guess.map((digit, index) => (
                             <input
                                 key={index}
+                                id={`digit-${index}`}
                                 maxLength="1"
                                 value={digit}
-                                onChange={(e) => {
-                                    const newGuess = [...guess];
-                                    newGuess[index] = e.target.value;
-                                    setGuess(newGuess);
-                                }}
+                                onChange={(e) => handleDigitInput(e, index)}
                                 style={{
-                                    backgroundColor: feedback[index] === 'green' ? 'lightgreen' : feedback[index] === 'red' ? 'lightcoral' : 'white',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    border: '1px solid rgba(0, 0, 0, 0.1)',
+                                    borderRadius: '4px',
+                                    width: '40px',
+                                    height: '40px',
+                                    fontSize: '20px',
+                                    textAlign: 'center',
+                                    margin: '5px',
                                 }}
                             />
                         ))}
