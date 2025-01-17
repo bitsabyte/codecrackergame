@@ -1,4 +1,4 @@
-// improved game-over screen, login reset, and retries fix
+// Updated App.js with improved game-over screen, login reset, and retries fix
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -62,6 +62,8 @@ const App = () => {
                 if (res.data.status === 'success') {
                     setStatus('success');
                     setRemainingTime(res.data.remainingTime || 0);
+                    localStorage.removeItem('token'); // Clear token for next player
+                    setGuess(Array(10).fill('')); // Clear guess input
                 } else if (res.data.status === 'game-over') {
                     setStatus('game-over');
                     setRemainingTime(0);
