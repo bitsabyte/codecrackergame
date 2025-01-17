@@ -146,21 +146,22 @@ const App = () => {
         localStorage.removeItem('token');
     };
 
-    const handleDigitInput = (e, index) => {
-        const value = e.target.value;
-        if (/^\d?$/.test(value)) { // Allow only single numeric characters or empty input
-            const newGuess = [...guess];
-            newGuess[index] = value;
-            setGuess(newGuess);
-            if (value !== '' && index < 9) {
-                const nextInput = document.getElementById(`digit-${index + 1}`);
-                if (nextInput) {
-                    nextInput.focus();
-                    nextInput.select(); // Select the text for easy overwrite
-                }
+const handleDigitInput = (e, index) => {
+    const value = e.target.value;
+    if (/^[a-zA-Z0-9]?$/.test(value)) { // Allow alphanumeric and empty input
+        const newGuess = [...guess];
+        newGuess[index] = value.toUpperCase(); // Optionally convert to uppercase
+        setGuess(newGuess);
+        if (value !== '' && index < 9) {
+            const nextInput = document.getElementById(`digit-${index + 1}`);
+            if (nextInput) {
+                nextInput.focus();
+                nextInput.select(); // Auto-select for easy overwriting
             }
         }
-    };
+    }
+};
+
 
     return (
         <div className={`app-container ${status === 'game-over' ? 'game-over' : 'in-progress'}`}>

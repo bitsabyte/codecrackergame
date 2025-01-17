@@ -140,3 +140,8 @@ body::before {
     color: black;
     border: 1px solid black;
 }
+/* Game-Over Screen */
+.game-over {
+    background-color: red; /* Red background for game-over screen */
+    color: white; /* White text for better contrast */
+}
