@@ -1,4 +1,4 @@
-// Updated App.js with persistent JWT storage, timer logic, and layout
+// improved game-over screen, login reset, and retries fix
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -24,6 +24,7 @@ const App = () => {
                 .then((res) => {
                     setStatus(res.data.status);
                     setRemainingTime(res.data.remainingTime || 0);
+                    setAttemptsLeft(res.data.attemptsLeft || 3); // Fetch actual attempts
                 })
                 .catch(() => {
                     setStatus('not-logged-in');
@@ -47,6 +48,8 @@ const App = () => {
                 setAttemptsLeft(res.data.attemptsLeft);
                 setRemainingTime(600); // Initialize timer on login
                 localStorage.setItem('token', res.data.token);
+                setGuess(Array(10).fill('')); // Clear guess input on new login
+                setFeedback([]); // Clear feedback
             })
             .catch((err) => alert(err.response.data.message));
     };
@@ -82,7 +85,18 @@ const App = () => {
     };
 
     return (
-        <div className="app-container" style={{ backgroundColor: '#b5c7a3' }}>
+        <div
+            className="app-container"
+            style={{
+                backgroundColor: status === 'game-over' ? 'red' : '#b5c7a3',
+                color: status === 'game-over' ? 'white' : 'inherit',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                textAlign: 'center',
+            }}
+        >
             {status === 'not-logged-in' && (
                 <div className="login-container">
                     <h1>Code Cracker Game</h1>
@@ -97,7 +111,7 @@ const App = () => {
             )}
 
             {status === 'game-over' && (
-                <h1 className="game-over">Game Over! Time Left: 0 seconds</h1>
+                <h1>Game Over - You failed to find the code in 3 attempts</h1>
             )}
             {status === 'success' && (
                 <h1 className="success">Congratulations! You cracked the code with {remainingTime} seconds left!</h1>
