@@ -164,58 +164,58 @@ const App = () => {
 
     return (
         <div className={`app-container ${status === 'game-over' ? 'game-over' : 'in-progress'}`}>
-            {status === 'in-progress' && (
-                <div className="center-container">
-                    <div className="timer-bar-container">
-                        <div
-                            className={`timer-bar ${getProgressBarClass(calculateProgress(remainingTime))}`}
-                            style={{ width: `${calculateProgress(remainingTime)}%` }}
-                        ></div>
-                    </div>
-                    <div className="attempts">Attempts Left: {attemptsLeft}</div>
-                    <div className="code-entry">
-                        {guess.map((digit, index) => (
-                            <input
-                                key={index}
-                                id={`digit-${index}`}
-                                maxLength="1"
-                                value={digit}
-                                onChange={(e) => handleDigitInput(e, index)}
-                                className={feedback[index] === 'green' ? 'correct' : feedback[index] === 'red' ? 'incorrect' : ''}
-                                onFocus={(e) => e.target.select()} // Auto-select text
-                            />
-                        ))}
-                        <button onClick={handleSubmit}>🗝</button>
-                    </div>
-                </div>
-            )}
+			{status === 'in-progress' && (
+				<div className="center-container">
+					<div className="timer-bar-container">
+						<div
+							className={`timer-bar ${getProgressBarClass(calculateProgress(remainingTime))}`}
+							style={{ width: `${calculateProgress(remainingTime)}%` }}
+						></div>
+					</div>
+					<div className="attempts">Attempts Left: {attemptsLeft}</div>
+					<div className="code-entry">
+						{guess.map((digit, index) => (
+							<input
+								key={index}
+								id={`digit-${index}`}
+								maxLength="1"
+								value={digit}
+								onChange={(e) => handleDigitInput(e, index)}
+								className={feedback[index] === 'green' ? 'correct' : feedback[index] === 'red' ? 'incorrect' : ''}
+								onFocus={(e) => e.target.select()} // Auto-select text
+							/>
+						))}
+						<button onClick={handleSubmit}>🗝</button>
+					</div>
+				</div>
+			)}
 
-            {status === 'not-logged-in' && (
-                <div className="login-container">
-                    <h1>Find the Campaign</h1>
-                    <input
-                        type="text"
-                        placeholder="Super hero team name"
-                        value={username}
-                        onChange={handleUsernameChange}
-                    />
-                    {errorMessage && <div className="error-message">{errorMessage}</div>}
-                    <button onClick={handleLogin}>
-                        Start Deciphering
-                    </button>
-                </div>
-            )}
+			{status === 'not-logged-in' && (
+				<div className="login-container">
+					<h1>Find the Campaign</h1>
+					<input
+						type="text"
+						placeholder="Super hero team name"
+						value={username}
+						onChange={handleUsernameChange}
+					/>
+					{errorMessage && <div className="error-message">{errorMessage}</div>}
+					<button onClick={handleLogin}>
+						Start Deciphering
+					</button>
+				</div>
+			)}
 
-            {status === 'game-over' && (
-                <h1>Game Over - You failed to find the code in 3 attempts or the time ran out</h1>
-            )}
+			{status === 'game-over' && (
+				<h1>Game Over - You failed to find the code in 3 attempts or the time ran out</h1>
+			)}
 
-            {status === 'success' && (
-                <h1 className="success">Congratulations! You cracked the code with {Math.floor(remainingTime / 60)}:{String(remainingTime % 60).padStart(2, '0')} left!</h1>
-            )}
+			{status === 'success' && (
+				<h1 className="success">Congratulations! You cracked the code with {Math.floor(remainingTime / 60)}:{String(remainingTime % 60).padStart(2, '0')} left!</h1>
+			)}
 
-            <button className="logout" onClick={handleLogout}>Logout</button>
-        </div>
+			<button className="logout" onClick={handleLogout}>Logout</button>
+		</div>
     );
 };
 

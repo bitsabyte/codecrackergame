@@ -30,12 +30,12 @@ body::before {
 }
 
 .game-over {
-    background-color: red; /* Red background for game-over screen */
-    color: white; /* White text for better contrast */
+    background-color: red;
+    color: white;
 }
 
 .in-progress {
-    background-color: transparent; /* No background for in-progress */
+    background-color: transparent;
     color: inherit;
 }
 
@@ -43,19 +43,19 @@ body::before {
 .center-container {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center content horizontally */
-    gap: 20px; /* Add spacing between elements */
-    width: 60%; /* Match width of .code-entry and .timer-bar-container */
-    margin: 0 auto; /* Center container on the screen */
+    align-items: center;
+    gap: 20px;
+    width: fit-content; /* Adjust width dynamically based on content */
+    margin: 0 auto; /* Center container horizontally */
 }
 
 /* Login Styles */
 .login-container input {
-    width: 300px; /* Larger size for better visibility */
-    height: 60px; /* Increased height */
-    font-size: 24px; /* Bigger font */
+    width: 300px;
+    height: 60px;
+    font-size: 24px;
     text-align: center;
-    border-radius: 50px; /* Fully rounded corners */
+    border-radius: 50px;
     margin-bottom: 20px;
     border: 2px solid gray;
     background-color: white;
@@ -63,10 +63,10 @@ body::before {
 }
 
 .login-container button {
-    width: 300px; /* Match size with input box */
-    height: 60px; /* Match height with input box */
-    font-size: 24px; /* Bigger font */
-    border-radius: 50px; /* Fully rounded corners */
+    width: 300px;
+    height: 60px;
+    font-size: 24px;
+    border-radius: 50px;
     cursor: pointer;
     background-color: white;
     color: black;
@@ -81,30 +81,31 @@ body::before {
 
 /* Error Message Styling */
 .error-message {
-    margin-top: 10px; /* Add spacing from the button */
-    font-size: 18px; /* Slightly smaller text */
-    font-weight: bold; /* Make it stand out */
-    color: red; /* Red for error indication */
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
     text-align: center;
 }
 
 /* Attempts Styling */
 .attempts {
-    font-size: 36px; /* Increased size for better visibility */
-    font-weight: bold; /* Bold text */
+    font-size: 36px;
+    font-weight: bold;
     margin-bottom: 20px;
-    color: black; /* Ensure full visibility */
+    color: black;
     text-align: center;
 }
 
 /* Timer Bar */
 .timer-bar-container {
-    width: 100%; /* Match the width of the parent container */
+    width: fit-content; /* Dynamically adjust to fit the width of the code entry */
     height: 20px;
     background-color: #ddd;
     border-radius: 10px;
     overflow: hidden;
     display: flex;
+    margin: 10px auto;
 }
 
 .timer-bar {
@@ -124,23 +125,22 @@ body::before {
 /* Code Entry Styling */
 .code-entry {
     display: flex;
-    justify-content: center; /* Center items horizontally */
-    align-items: center; /* Center items vertically */
-    gap: 1%; /* Dynamically scale gaps between inputs */
-    width: 100%; /* Match the parent container width */
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Add spacing between inputs */
 }
 
 .code-entry input {
-    flex: 1;
-    font-size: calc(1.5vw + 1vh);
+    flex: 0 0 50px; /* Fixed width and height for round inputs */
+    font-size: 24px;
     text-align: center;
     background-color: white;
     color: black;
     border: 2px solid gray;
-    border-radius: 50%; /* Fully rounded corners */
+    border-radius: 50%; /* Fully round inputs */
     transition: border-color 0.3s ease, color 0.3s ease;
-    height: calc(5vh);
-    width: calc(5vh); /* Keep inputs square */
+    height: 50px;
+    width: 50px;
 }
 
 .code-entry input.correct {
@@ -153,24 +153,23 @@ body::before {
     color: red;
 }
 
-/* Styling for the key button */
+/* Key Button Styling */
 .code-entry button {
-    display: flex; /* Use flexbox for centering */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    font-size: calc(1.5vw + 1vh); /* Dynamically scale font size */
-    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    padding: 0;
     border-radius: 50%; /* Fully rounded */
     cursor: pointer;
     background-color: white;
     color: black;
     border: 2px solid black;
-    width: calc(5vh); /* Match the size of inputs */
-    height: calc(5vh); /* Ensure button remains square */
+    height: 50px;
+    width: 50px; /* Match size of inputs */
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Hover effect for the key button */
 .code-entry button:hover {
     background-color: black;
     color: white;
