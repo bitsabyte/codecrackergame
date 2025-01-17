@@ -1,4 +1,4 @@
-// Updated App.js with improved game-over screen, login reset, and retries fix
+// Updated App.js with improved game-over screen, login reset, retries fix, and timeout handling
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -13,6 +13,12 @@ const App = () => {
     const [attemptsLeft, setAttemptsLeft] = useState(3);
     const [token, setToken] = useState(null);
     const [remainingTime, setRemainingTime] = useState(0);
+
+    const formatTime = (timeInSeconds) => {
+        const minutes = Math.floor(timeInSeconds / 60);
+        const seconds = timeInSeconds % 60;
+        return `${minutes} : ${seconds.toString().padStart(2, '0')}`;
+    };
 
     useEffect(() => {
         const savedToken = localStorage.getItem('token');
@@ -35,7 +41,16 @@ const App = () => {
 
     useEffect(() => {
         if (remainingTime > 0 && status === 'in-progress') {
-            const interval = setInterval(() => setRemainingTime((time) => time - 1), 1000);
+            const interval = setInterval(() => {
+                setRemainingTime((time) => {
+                    if (time - 1 <= 0) {
+                        clearInterval(interval);
+                        setStatus('game-over');
+                        return 0;
+                    }
+                    return time - 1;
+                });
+            }, 1000);
             return () => clearInterval(interval);
         }
     }, [remainingTime, status]);
@@ -113,15 +128,15 @@ const App = () => {
             )}
 
             {status === 'game-over' && (
-                <h1>Game Over - You failed to find the code in 3 attempts</h1>
+                <h1>Game Over - You failed to find the code in 3 attempts or the time ran out</h1>
             )}
             {status === 'success' && (
-                <h1 className="success">Congratulations! You cracked the code with {remainingTime} seconds left!</h1>
+                <h1 className="success">Congratulations! You cracked the code with {formatTime(remainingTime)} left!</h1>
             )}
             {status === 'in-progress' && (
                 <div className="game-container">
                     <div className="attempts">Attempts Left: {attemptsLeft}</div>
-                    <div className="timer">Time Remaining: {remainingTime} seconds</div>
+                    <div className="timer" style={{ fontWeight: 'bold', fontSize: '24px' }}>Time Remaining: {formatTime(remainingTime)}</div>
                     <div className="code-entry">
                         {guess.map((digit, index) => (
                             <input
