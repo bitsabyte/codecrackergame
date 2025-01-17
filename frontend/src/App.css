@@ -1,29 +1,25 @@
-/* Background Image */
+/* Background */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     position: relative;
-	background-color: darkslategray;
 }
 
 body::before {
-    content: ''; /* Pseudo-element for the background */
+    content: '';
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('https://i.imgur.com/8WPh5Xl.png'); /* Background image */
+    background: url('https://i.imgur.com/8WPh5Xl.png') no-repeat center center;
     background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.25; /* Make the background semi-transparent */
-    z-index: -1; /* Place it behind all other elements */
+    opacity: 0.25;
+    z-index: -1;
 }
 
 /* App Container */
 .app-container {
-	background-color: transparent; /* Ensure no fallback background */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -33,13 +29,26 @@ body::before {
     position: relative;
 }
 
-.game-over {
-    background-color: red;
-    color: white;
+/* Login Styles */
+.login-container input {
+    width: 300px; /* Increased size */
+    height: 60px;
+    font-size: 24px; /* Bigger font size */
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 2px solid gray;
 }
 
-.in-progress {
-	background-color: transparent;
+.login-container button {
+    width: 300px; /* Increased size */
+    height: 60px;
+    font-size: 24px; /* Bigger font size */
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
 }
 
 /* Attempts Styling */
@@ -48,25 +57,51 @@ body::before {
     margin-bottom: 20px;
 }
 
+/* Timer Bar */
+.timer-bar-container {
+    width: 80%;
+    height: 20px;
+    background-color: #ddd;
+    border-radius: 10px;
+    margin: 10px auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.timer-bar {
+    height: 100%;
+    background-color: green;
+    transition: width 1s ease, background-color 1s ease;
+}
+
+.timer-bar.low {
+    background-color: red;
+}
+
+.timer-bar.medium {
+    background-color: orange;
+}
+
 /* Code Entry Styling */
 .code-entry {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 1%; /* Dynamically scale gaps between inputs */
     margin-bottom: 20px;
+    width: 60%; /* Make the code entry take up 60% of the screen width */
 }
 
 .code-entry input {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
+    flex: 1; /* Each input dynamically scales */
+    font-size: calc(1.5vw + 1vh); /* Dynamically scale font size based on viewport */
     text-align: center;
     background-color: white;
     color: black;
     border: 2px solid gray;
     border-radius: 4px;
     transition: border-color 0.3s ease, color 0.3s ease;
+    height: calc(5vh); /* Dynamically adjust height */
 }
 
 .code-entry input.correct {
@@ -79,45 +114,23 @@ body::before {
     color: red;
 }
 
-/* Button Styling */
-.code-entry button,
-.logout {
+.code-entry button {
+    font-size: calc(1.5vw + 1vh);
     padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* Logout Button */
+.logout {
     font-size: 16px;
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    padding: 10px 20px;
     border-radius: 20px;
     cursor: pointer;
     background-color: white;
     color: black;
     border: 1px solid black;
-}
-
-/* Logout Button Position */
-.logout {
-    position: absolute;
-    top: 50px;
-    right: 50px;
-}
-
-.timer-bar-container {
-    width: 80%;
-    height: 20px;
-    background-color: #ddd; /* Background for the progress bar container */
-    border-radius: 10px;
-    margin: 10px auto;
-    overflow: hidden;
-    position: relative;
-}
-
-.timer-bar {
-    height: 100%;
-    background-color: green; /* Initial progress color */
-    transition: width 1s ease, background-color 1s ease; /* Smooth width/color changes */
-}
-
-.timer-bar.low {
-    background-color: red; /* Change color when time is low */
-}
-
-.timer-bar.medium {
-    background-color: orange; /* Change color when time is medium */
 }
