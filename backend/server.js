@@ -93,17 +93,18 @@ app.post('/guess', authenticateToken, checkTimer, (req, res) => {
         return res.status(200).send({
             message: 'Correct code!',
             status: 'success',
-            remainingTime: Math.ceil(req.remainingTime / 1000), // Send remaining seconds
+            remainingTime: Math.ceil(req.remainingTime / 1000),
             result,
         });
     }
 
-    req.user.attempts -= 1;
-    const newToken = generateToken(req.user.username, req.user.attempts, req.user.startTime);
+    req.user.attempts -= 1; // Decrement attempts
 
     if (req.user.attempts <= 0) {
         return res.status(403).send({ message: 'No attempts left.', status: 'game-over', remainingTime: Math.ceil(req.remainingTime / 1000) });
     }
+
+    const newToken = generateToken(req.user.username, req.user.attempts, req.user.startTime);
 
     res.status(200).send({
         result,
