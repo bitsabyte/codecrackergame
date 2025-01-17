@@ -99,27 +99,28 @@ body::before {
 
 /* Timer Bar */
 .timer-bar-container {
-    width: fit-content; /* Dynamically adjust to fit the width of the code entry */
-    height: 20px;
-    background-color: #ddd;
+    width: 100%; /* Fill the width of the parent container */
+    max-width: 60%; /* Match the maximum width of code-entry */
+    height: 20px; /* Height of the progress bar */
+    background-color: #ddd; /* Light gray background for the bar */
     border-radius: 10px;
     overflow: hidden;
+    margin: 10px auto; /* Center the bar with margin */
     display: flex;
-    margin: 10px auto;
 }
 
 .timer-bar {
-    height: 100%;
-    background-color: green;
-    transition: width 1s ease, background-color 1s ease;
+    height: 100%; /* Fill the height of the container */
+    background-color: green; /* Default progress color */
+    transition: width 1s ease, background-color 1s ease; /* Smooth transitions */
 }
 
 .timer-bar.low {
-    background-color: red;
+    background-color: red; /* Change to red when progress is low */
 }
 
 .timer-bar.medium {
-    background-color: orange;
+    background-color: orange; /* Change to orange for medium progress */
 }
 
 /* Code Entry Styling */

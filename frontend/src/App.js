@@ -1,4 +1,3 @@
-// Updated App.js with aligned elements using center-container
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -166,13 +165,18 @@ const App = () => {
         <div className={`app-container ${status === 'game-over' ? 'game-over' : 'in-progress'}`}>
 			{status === 'in-progress' && (
 				<div className="center-container">
+					{/* Progress Bar */}
 					<div className="timer-bar-container">
 						<div
 							className={`timer-bar ${getProgressBarClass(calculateProgress(remainingTime))}`}
-							style={{ width: `${calculateProgress(remainingTime)}%` }}
+							style={{ width: `${calculateProgress(remainingTime)}%` }} /* Dynamic progress */
 						></div>
 					</div>
+					
+					{/* Attempts Left */}
 					<div className="attempts">Attempts Left: {attemptsLeft}</div>
+					
+					{/* Code Entry */}
 					<div className="code-entry">
 						{guess.map((digit, index) => (
 							<input
