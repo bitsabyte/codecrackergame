@@ -12,6 +12,7 @@ const App = () => {
     const [attemptsLeft, setAttemptsLeft] = useState(3);
     const [token, setToken] = useState(null);
     const [remainingTime, setRemainingTime] = useState(0);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const formatTime = (timeInSeconds) => {
         const minutes = Math.floor(timeInSeconds / 60);
@@ -43,7 +44,6 @@ const App = () => {
             const interval = setInterval(() => {
                 setRemainingTime((time) => {
                     if (time > 0) return time - 1;
-                    clearInterval(interval);
                     setStatus('game-over');
                     return 0;
                 });
@@ -54,6 +54,11 @@ const App = () => {
     }, [remainingTime, status]);
 
     const handleLogin = () => {
+        if (!username) {
+            setErrorMessage('Username is required');
+            return;
+        }
+
         axios.post(`${BACKEND_URL}/login`, { username })
             .then((res) => {
                 setToken(res.data.token);
@@ -63,8 +68,8 @@ const App = () => {
                 localStorage.setItem('token', res.data.token);
                 setGuess(Array(10).fill('')); // Clear guess input on new login
                 setFeedback([]); // Clear feedback
-            })
-            .catch((err) => alert(err.response.data.message));
+                setErrorMessage(''); // Clear error message
+            });
     };
 
     const handleSubmit = () => {
@@ -87,16 +92,13 @@ const App = () => {
                     setRemainingTime(res.data.remainingTime || remainingTime);
                     localStorage.setItem('token', res.data.token);
                 }
-            })
-            .catch((err) => alert(err.response.data.message));
+            });
     };
 
     const handleLogout = () => {
-        if (window.confirm("Are you sure you want to log out?")) {
-            setToken(null);
-            setStatus('not-logged-in');
-            localStorage.removeItem('token');
-        }
+        setToken(null);
+        setStatus('not-logged-in');
+        localStorage.removeItem('token');
     };
 
     const handleDigitInput = (e, index) => {
@@ -135,6 +137,7 @@ const App = () => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
+                    {errorMessage && <div className="error-message">{errorMessage}</div>}
                     <button onClick={handleLogin}>Login</button>
                 </div>
             )}
