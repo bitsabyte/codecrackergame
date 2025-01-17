@@ -77,13 +77,14 @@ body::before {
 
 /* Timer Bar */
 .timer-bar-container {
-    width: 80%;
+    width: 60%; /* Match the width of the digit input boxes and submit button */
     height: 20px;
     background-color: #ddd;
     border-radius: 10px;
-    margin: 10px auto;
+    margin: 20px auto; /* Add spacing around the bar */
     overflow: hidden;
     position: relative;
+    display: flex;
 }
 
 .timer-bar {
@@ -107,7 +108,7 @@ body::before {
     align-items: center;
     gap: 1%; /* Dynamically scale gaps between inputs */
     margin-bottom: 20px;
-    width: 60%; /* Make the code entry take up 60% of the screen width */
+    width: 60%; /* Match the progress bar width */
 }
 
 .code-entry input {

@@ -1,4 +1,4 @@
-// Updated App.js with reintroduced progress bar
+// Updated App.js with progress bar width matching digit inputs and button
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -146,22 +146,21 @@ const App = () => {
         localStorage.removeItem('token');
     };
 
-const handleDigitInput = (e, index) => {
-    const value = e.target.value;
-    if (/^[a-zA-Z0-9]?$/.test(value)) { // Allow alphanumeric and empty input
-        const newGuess = [...guess];
-        newGuess[index] = value.toUpperCase(); // Optionally convert to uppercase
-        setGuess(newGuess);
-        if (value !== '' && index < 9) {
-            const nextInput = document.getElementById(`digit-${index + 1}`);
-            if (nextInput) {
-                nextInput.focus();
-                nextInput.select(); // Auto-select for easy overwriting
+    const handleDigitInput = (e, index) => {
+        const value = e.target.value;
+        if (/^[a-zA-Z0-9]?$/.test(value)) { // Allow alphanumeric characters and empty input
+            const newGuess = [...guess];
+            newGuess[index] = value.toUpperCase(); // Convert to uppercase
+            setGuess(newGuess);
+            if (value !== '' && index < 9) {
+                const nextInput = document.getElementById(`digit-${index + 1}`);
+                if (nextInput) {
+                    nextInput.focus();
+                    nextInput.select(); // Select the text for easy overwrite
+                }
             }
         }
-    }
-};
-
+    };
 
     return (
         <div className={`app-container ${status === 'game-over' ? 'game-over' : 'in-progress'}`}>
@@ -182,11 +181,6 @@ const handleDigitInput = (e, index) => {
                         placeholder="Super hero team name"
                         value={username}
                         onChange={handleUsernameChange}
-                        style={{
-                            borderRadius: '4px',
-                            padding: '10px',
-                            marginBottom: '10px',
-                        }}
                     />
                     {errorMessage && <div className="error-message">{errorMessage}</div>}
                     <button onClick={handleLogin}>
