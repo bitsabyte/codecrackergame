@@ -31,7 +31,6 @@ body::before {
     position: relative;
 }
 
-/* Game Screens */
 .game-over {
     background-color: red;
     color: white;
@@ -53,18 +52,49 @@ body::before {
     align-items: center;
 }
 
-/* Header Styling */
-h1 {
-    font-size: 48px; /* Larger font size for better visibility */
-    font-weight: bold;
-    color: white; /* Ensure high contrast with darker background */
+/* Login Styles */
+.login-container input {
+    width: 300px; /* Larger size for better visibility */
+    height: 60px; /* Increased height */
+    font-size: 24px; /* Bigger font */
+    text-align: center;
+    border-radius: 50px; /* Fully rounded corners */
     margin-bottom: 20px;
+    border: 2px solid gray;
+    background-color: white;
+    color: black;
+}
+
+.login-container button {
+    width: 300px; /* Match size with input box */
+    height: 60px; /* Match height with input box */
+    font-size: 24px; /* Bigger font */
+    border-radius: 50px; /* Fully rounded corners */
+    cursor: pointer;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.login-container button:hover {
+    background-color: black;
+    color: white;
+}
+
+/* Error Message Styling */
+.error-message {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    text-align: center;
 }
 
 /* Attempts Styling */
 .attempts {
-    font-size: 36px;
-    font-weight: bold;
+    font-size: 36px; /* Increased size for better visibility */
+    font-weight: bold; /* Bold text */
     color: white; /* Ensure contrast with darker background */
     margin-bottom: 20px;
     text-align: center;
@@ -105,26 +135,33 @@ h1 {
 }
 
 .code-entry input {
-    flex: 0 0 50px;
+    flex: 0 0 50px; /* Fixed size for inputs */
     font-size: 24px;
     text-align: center;
     background-color: white;
     color: black;
     border: 2px solid gray;
-    border-radius: 50%;
-    transition: border-color 0.3s ease, color 0.3s ease;
+    border-radius: 50%; /* Fully round */
+    transition: border-color 0.3s ease, color 0.3s ease, background-color 0.3s ease;
     height: 50px;
     width: 50px;
 }
 
 .code-entry input.correct {
+    background-color: lightgreen; /* Correct digit background */
     border-color: green;
     color: green;
 }
 
 .code-entry input.incorrect {
+    background-color: lightcoral; /* Incorrect digit background */
     border-color: red;
     color: red;
+}
+
+.code-entry input:disabled {
+    cursor: not-allowed; /* Disable cursor for uneditable inputs */
+    opacity: 1; /* Ensure the green digits remain fully visible */
 }
 
 /* Key Button Styling */
@@ -134,13 +171,13 @@ h1 {
     align-items: center;
     font-size: 24px;
     padding: 0;
-    border-radius: 50%;
+    border-radius: 50%; /* Fully rounded */
     cursor: pointer;
     background-color: white;
     color: black;
     border: 2px solid black;
     height: 50px;
-    width: 50px;
+    width: 50px; /* Match size of inputs */
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 

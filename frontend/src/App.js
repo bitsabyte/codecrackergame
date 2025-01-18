@@ -13,6 +13,7 @@ const App = () => {
     const [token, setToken] = useState(null);
     const [remainingTime, setRemainingTime] = useState(0);
     const [errorMessage, setErrorMessage] = useState('');
+    const [error, setError] = useState(''); // State for inline error feedback
 
     const calculateProgress = (time) => {
         const totalTime = 600; // Total timer duration in seconds (10 minutes)
@@ -106,6 +107,13 @@ const App = () => {
     };
 
     const handleSubmit = () => {
+        // Ensure all boxes are filled
+        if (guess.some((digit) => digit.trim() === '')) {
+            setError('Please fill in all the boxes before submitting.');
+            return;
+        }
+
+        setError(''); // Clear error if all boxes are filled
         axios.post(`${BACKEND_URL}/guess`, { guess }, {
             headers: { Authorization: `Bearer ${token}` },
         })
@@ -147,15 +155,25 @@ const App = () => {
 
     const handleDigitInput = (e, index) => {
         const value = e.target.value;
+
+        // Prevent editing a correct (green) digit
+        if (feedback[index] === 'green') return;
+
         if (/^[a-zA-Z0-9]?$/.test(value)) { // Allow alphanumeric characters and empty input
             const newGuess = [...guess];
             newGuess[index] = value.toUpperCase(); // Convert to uppercase
             setGuess(newGuess);
+
+            // Reset the feedback to default for the edited digit
+            const newFeedback = [...feedback];
+            newFeedback[index] = ''; // Clear feedback for this digit
+            setFeedback(newFeedback);
+
             if (value !== '' && index < 9) {
                 const nextInput = document.getElementById(`digit-${index + 1}`);
                 if (nextInput) {
                     nextInput.focus();
-                    nextInput.select(); // Select the text for easy overwrite
+                    nextInput.select(); // Auto-select text for easy overwrite
                 }
             }
         }
@@ -163,68 +181,60 @@ const App = () => {
 
     return (
         <div className={`app-container ${status === 'game-over' ? 'game-over' : 'in-progress'}`}>
-			{status === 'in-progress' && (
-				<div className="center-container">
-					{/* Progress Bar */}
-					<div className="timer-bar-container">
-						<div
-							className={`timer-bar ${getProgressBarClass(calculateProgress(remainingTime))}`}
-							style={{ width: `${calculateProgress(remainingTime)}%` }} /* Dynamic progress */
-						></div>
-					</div>
-					
-					{/* Attempts Left */}
-					<div className="attempts">Attempts Left: {attemptsLeft}</div>
-					
-					{/* Code Entry */}
-					<div className="code-entry">
-						{guess.map((digit, index) => (
-							<input
-								key={index}
-								id={`digit-${index}`}
-								maxLength="1"
-								value={digit}
-								onChange={(e) => handleDigitInput(e, index)}
-								className={feedback[index] === 'green' ? 'correct' : feedback[index] === 'red' ? 'incorrect' : ''}
-								onFocus={(e) => e.target.select()} // Auto-select text
-							/>
-						))}
-						<button onClick={handleSubmit}>🗝</button>
-					</div>
-				</div>
-			)}
+            {status === 'in-progress' && (
+                <div className="center-container">
+                    <div className="timer-bar-container">
+                        <div
+                            className={`timer-bar ${getProgressBarClass(calculateProgress(remainingTime))}`}
+                            style={{ width: `${calculateProgress(remainingTime)}%` }}
+                        ></div>
+                    </div>
+                    <div className="attempts">Attempts Left: {attemptsLeft}</div>
+                    <div className="code-entry">
+                        {guess.map((digit, index) => (
+                            <input
+                                key={index}
+                                id={`digit-${index}`}
+                                maxLength="1"
+                                value={digit}
+                                onChange={(e) => handleDigitInput(e, index)}
+                                className={feedback[index] === 'green' ? 'correct' : feedback[index] === 'red' ? 'incorrect' : ''}
+                                disabled={feedback[index] === 'green'} // Disable editing for correct digits
+                                onFocus={(e) => e.target.select()} // Auto-select text
+                            />
+                        ))}
+                        <button onClick={handleSubmit}>🗝</button>
+                    </div>
+                    {error && <div className="error-message">{error}</div>}
+                </div>
+            )}
 
-			{status === 'not-logged-in' && (
-				<div className="login-container">
-					<h1>Find the Campaign</h1>
-					<input
-						type="text"
-						placeholder="Super hero team name"
-						value={username}
-						onChange={handleUsernameChange}
-					/>
-					{errorMessage && <div className="error-message">{errorMessage}</div>}
-					<button onClick={handleLogin}>
-						Start Deciphering
-					</button>
-				</div>
-			)}
+            {status === 'not-logged-in' && (
+                <div className="login-container">
+                    <h1>Find the Campaign</h1>
+                    <input
+                        type="text"
+                        placeholder="Super hero team name"
+                        value={username}
+                        onChange={handleUsernameChange}
+                    />
+                    {errorMessage && <div className="error-message">{errorMessage}</div>}
+                    <button onClick={handleLogin}>
+                        Start Deciphering
+                    </button>
+                </div>
+            )}
 
-			{status === 'game-over' && (
-				<h1>Game Over - You failed to find the code in 3 attempts or the time ran out</h1>
-			)}
+            {status === 'game-over' && (
+                <h1>Game Over - You failed to find the code in 3 attempts or the time ran out</h1>
+            )}
 
-			{status === 'success' && (
-				<div className="success">
-					<h1>
-						Congratulations! You cracked the code with {Math.floor(remainingTime / 60)}:
-						{String(remainingTime % 60).padStart(2, '0')} left!
-					</h1>
-				</div>
-			)}
+            {status === 'success' && (
+                <h1 className="success">Congratulations! You cracked the code with {Math.floor(remainingTime / 60)}:{String(remainingTime % 60).padStart(2, '0')} left!</h1>
+            )}
 
-			<button className="logout" onClick={handleLogout}>Logout</button>
-		</div>
+            <button className="logout" onClick={handleLogout}>Logout</button>
+        </div>
     );
 };
 
