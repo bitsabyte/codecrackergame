@@ -3,6 +3,8 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     position: relative;
+    background-color: #444; /* Darker background */
+    color: white; /* Default font color for contrast */
 }
 
 body::before {
@@ -29,6 +31,7 @@ body::before {
     position: relative;
 }
 
+/* Game Screens */
 .game-over {
     background-color: red;
     color: white;
@@ -39,88 +42,58 @@ body::before {
     color: inherit;
 }
 
-/* Center Container */
-.center-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    width: fit-content; /* Adjust width dynamically based on content */
-    margin: 0 auto; /* Center container horizontally */
-}
-
-/* Login Styles */
-.login-container input {
-    width: 300px;
-    height: 60px;
-    font-size: 24px;
-    text-align: center;
-    border-radius: 50px;
-    margin-bottom: 20px;
-    border: 2px solid gray;
-    background-color: white;
-    color: black;
-}
-
-.login-container button {
-    width: 300px;
-    height: 60px;
-    font-size: 24px;
-    border-radius: 50px;
-    cursor: pointer;
-    background-color: white;
-    color: black;
-    border: 2px solid black;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.login-container button:hover {
-    background-color: black;
+.success {
+    background-color: green;
     color: white;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Error Message Styling */
-.error-message {
-    margin-top: 10px;
-    font-size: 18px;
+/* Header Styling */
+h1 {
+    font-size: 48px; /* Larger font size for better visibility */
     font-weight: bold;
-    color: red;
-    text-align: center;
+    color: white; /* Ensure high contrast with darker background */
+    margin-bottom: 20px;
 }
 
 /* Attempts Styling */
 .attempts {
     font-size: 36px;
     font-weight: bold;
+    color: white; /* Ensure contrast with darker background */
     margin-bottom: 20px;
-    color: black;
     text-align: center;
 }
 
 /* Timer Bar */
 .timer-bar-container {
-    width: 100%; /* Fill the width of the parent container */
+    width: 100%; /* Match the width of the parent container */
     max-width: 60%; /* Match the maximum width of code-entry */
-    height: 20px; /* Height of the progress bar */
+    height: 20px;
     background-color: #ddd; /* Light gray background for the bar */
     border-radius: 10px;
     overflow: hidden;
-    margin: 10px auto; /* Center the bar with margin */
+    margin: 10px auto;
     display: flex;
 }
 
 .timer-bar {
-    height: 100%; /* Fill the height of the container */
-    background-color: green; /* Default progress color */
-    transition: width 1s ease, background-color 1s ease; /* Smooth transitions */
+    height: 100%;
+    background-color: #00ff00; /* Brighter green for the initial phase */
+    transition: width 1s ease, background-color 1s ease;
 }
 
 .timer-bar.low {
-    background-color: red; /* Change to red when progress is low */
+    background-color: red;
 }
 
 .timer-bar.medium {
-    background-color: orange; /* Change to orange for medium progress */
+    background-color: orange;
 }
 
 /* Code Entry Styling */
@@ -128,17 +101,17 @@ body::before {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px; /* Add spacing between inputs */
+    gap: 10px;
 }
 
 .code-entry input {
-    flex: 0 0 50px; /* Fixed width and height for round inputs */
+    flex: 0 0 50px;
     font-size: 24px;
     text-align: center;
     background-color: white;
     color: black;
     border: 2px solid gray;
-    border-radius: 50%; /* Fully round inputs */
+    border-radius: 50%;
     transition: border-color 0.3s ease, color 0.3s ease;
     height: 50px;
     width: 50px;
@@ -161,13 +134,13 @@ body::before {
     align-items: center;
     font-size: 24px;
     padding: 0;
-    border-radius: 50%; /* Fully rounded */
+    border-radius: 50%;
     cursor: pointer;
     background-color: white;
     color: black;
     border: 2px solid black;
     height: 50px;
-    width: 50px; /* Match size of inputs */
+    width: 50px;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -188,15 +161,4 @@ body::before {
     background-color: white;
     color: black;
     border: 1px solid black;
-}
-
-.success {
-    background-color: green; /* Green background for success screen */
-    color: white; /* White text for better contrast */
-    text-align: center;
-    height: 100%; /* Ensure it covers the full screen */
-    width: 100%; /* Ensure it covers the full screen */
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
