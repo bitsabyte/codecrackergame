@@ -74,11 +74,16 @@ app.post('/guess', authenticateToken, (req, res) => {
         10 * 60 * 1000 - (Date.now() - req.user.startTime)
     ) / 1000; // Remaining time in seconds
 
+    // Log each attempt with remaining time
+    console.log(
+        `Username: ${req.user.username}, Guess: ${normalizedGuess.join('')}, Result: ${result.join(', ')}, Remaining Time: ${Math.ceil(remainingTime)}s`
+    );
+
     if (isCorrect) {
         return res.status(200).send({
             message: 'Correct code!',
             status: 'success',
-            remainingTime: Math.ceil(remainingTime), // Include remaining time in response
+            remainingTime: Math.ceil(remainingTime), // Include remaining time
             result,
         });
     }
@@ -86,6 +91,9 @@ app.post('/guess', authenticateToken, (req, res) => {
     req.user.attempts -= 1;
 
     if (req.user.attempts <= 0) {
+        console.log(
+            `Username: ${req.user.username}, Guess: ${normalizedGuess.join('')}, Status: Game Over, Remaining Time: ${Math.ceil(remainingTime)}s`
+        );
         return res.status(403).send({ message: 'No attempts left.', status: 'game-over' });
     }
 
@@ -98,6 +106,7 @@ app.post('/guess', authenticateToken, (req, res) => {
         token: newToken,
     });
 });
+
 
 // Status endpoint
 app.get('/status', authenticateToken, (req, res) => {
