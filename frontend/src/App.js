@@ -106,46 +106,48 @@ const App = () => {
             });
     };
 
-    const handleSubmit = () => {
-        // Ensure all boxes are filled
-        if (guess.some((digit) => digit.trim() === '')) {
-            setError('Please fill in all the boxes before submitting.');
-            return;
-        }
+const handleSubmit = () => {
+    // Ensure all boxes are filled
+    if (guess.some((digit) => digit.trim() === '')) {
+        setError('Please fill in all the boxes before submitting.');
+        return;
+    }
 
-        setError(''); // Clear error if all boxes are filled
-        axios.post(`${BACKEND_URL}/guess`, { guess }, {
-            headers: { Authorization: `Bearer ${token}` },
+    const normalizedGuess = guess.map((digit) => digit.toUpperCase()); // Normalize input
+
+    setError(''); // Clear error if all boxes are filled
+    axios.post(`${BACKEND_URL}/guess`, { guess: normalizedGuess }, {
+        headers: { Authorization: `Bearer ${token}` },
+    })
+        .then((res) => {
+            if (res.data.status === 'success') {
+                setStatus('success');
+                setRemainingTime(res.data.remainingTime || 0);
+                localStorage.removeItem('token');
+                setGuess(Array(10).fill(''));
+                setFeedback(Array(10).fill('green'));
+            } else if (res.data.status === 'game-over') {
+                setStatus('game-over');
+                setRemainingTime(0);
+                localStorage.removeItem('token'); // End session
+            } else {
+                setFeedback(res.data.result); // Update feedback for digit correctness
+                setAttemptsLeft(res.data.attemptsLeft);
+                setToken(res.data.token);
+                setRemainingTime(res.data.remainingTime || remainingTime);
+                localStorage.setItem('token', res.data.token);
+            }
         })
-            .then((res) => {
-                if (res.data.status === 'success') {
-                    setStatus('success');
-                    setRemainingTime(res.data.remainingTime || 0);
-                    localStorage.removeItem('token');
-                    setGuess(Array(10).fill(''));
-                    setFeedback(Array(10).fill('green'));
-                } else if (res.data.status === 'game-over') {
-                    setStatus('game-over');
-                    setRemainingTime(0);
-                    localStorage.removeItem('token'); // End session
-                } else {
-                    setFeedback(res.data.result); // Update feedback for digit correctness
-                    setAttemptsLeft(res.data.attemptsLeft);
-                    setToken(res.data.token);
-                    setRemainingTime(res.data.remainingTime || remainingTime);
-                    localStorage.setItem('token', res.data.token);
-                }
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 403 && err.response.data.status === 'game-over') {
-                    setStatus('game-over');
-                    setRemainingTime(0);
-                    localStorage.removeItem('token'); // End session
-                } else {
-                    console.error('Unexpected error:', err);
-                }
-            });
-    };
+        .catch((err) => {
+            if (err.response && err.response.status === 403 && err.response.data.status === 'game-over') {
+                setStatus('game-over');
+                setRemainingTime(0);
+                localStorage.removeItem('token'); // End session
+            } else {
+                console.error('Unexpected error:', err);
+            }
+        });
+};
 
     const handleLogout = () => {
         setToken(null);
@@ -153,31 +155,31 @@ const App = () => {
         localStorage.removeItem('token');
     };
 
-    const handleDigitInput = (e, index) => {
-        const value = e.target.value;
+const handleDigitInput = (e, index) => {
+    const value = e.target.value;
 
-        // Prevent editing a correct (green) digit
-        if (feedback[index] === 'green') return;
+    // Prevent editing a correct (green) digit
+    if (feedback[index] === 'green') return;
 
-        if (/^[a-zA-Z0-9]?$/.test(value)) { // Allow alphanumeric characters and empty input
-            const newGuess = [...guess];
-            newGuess[index] = value.toUpperCase(); // Convert to uppercase
-            setGuess(newGuess);
+    if (/^[a-zA-Z0-9]?$/.test(value)) { // Allow alphanumeric characters and empty input
+        const newGuess = [...guess];
+        newGuess[index] = value.toUpperCase(); // Convert to uppercase for consistency
+        setGuess(newGuess);
 
-            // Reset the feedback to default for the edited digit
-            const newFeedback = [...feedback];
-            newFeedback[index] = ''; // Clear feedback for this digit
-            setFeedback(newFeedback);
+        // Reset the feedback to default for the edited digit
+        const newFeedback = [...feedback];
+        newFeedback[index] = ''; // Clear feedback for this digit
+        setFeedback(newFeedback);
 
-            if (value !== '' && index < 9) {
-                const nextInput = document.getElementById(`digit-${index + 1}`);
-                if (nextInput) {
-                    nextInput.focus();
-                    nextInput.select(); // Auto-select text for easy overwrite
-                }
+        if (value !== '' && index < 9) {
+            const nextInput = document.getElementById(`digit-${index + 1}`);
+            if (nextInput) {
+                nextInput.focus();
+                nextInput.select(); // Auto-select text for easy overwrite
             }
         }
-    };
+    }
+};
 
     return (
         <div className={`app-container ${status === 'game-over' ? 'game-over' : 'in-progress'}`}>
