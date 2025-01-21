@@ -113,16 +113,14 @@ const handleSubmit = () => {
         return;
     }
 
-    const normalizedGuess = guess.map((digit) => digit.toUpperCase()); // Normalize input
-
     setError(''); // Clear error if all boxes are filled
-    axios.post(`${BACKEND_URL}/guess`, { guess: normalizedGuess }, {
+    axios.post(`${BACKEND_URL}/guess`, { guess }, {
         headers: { Authorization: `Bearer ${token}` },
     })
         .then((res) => {
             if (res.data.status === 'success') {
                 setStatus('success');
-                setRemainingTime(res.data.remainingTime || 0);
+                setRemainingTime(res.data.remainingTime || 0); // Use remaining time from backend
                 localStorage.removeItem('token');
                 setGuess(Array(10).fill(''));
                 setFeedback(Array(10).fill('green'));

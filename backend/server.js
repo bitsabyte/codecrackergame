@@ -69,10 +69,16 @@ app.post('/guess', authenticateToken, (req, res) => {
 
     const isCorrect = result.every((color) => color === 'green');
 
+    const remainingTime = Math.max(
+        0,
+        10 * 60 * 1000 - (Date.now() - req.user.startTime)
+    ) / 1000; // Remaining time in seconds
+
     if (isCorrect) {
         return res.status(200).send({
             message: 'Correct code!',
             status: 'success',
+            remainingTime: Math.ceil(remainingTime), // Include remaining time in response
             result,
         });
     }
