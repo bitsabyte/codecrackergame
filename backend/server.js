@@ -6,9 +6,9 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const SECRET_KEY = process.env.SESSION_SECRET || 'secretstuff!';
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
-const PASSWORD = (process.env.ADMIN_PASSWORD || 'DEFAULTPASSWORD').toUpperCase(); // Convert to uppercase
+const SECRET_KEY = process.env.SESSION_SECRET;
+const FRONTEND_URL = process.env.FRONTEND_URL;
+const PASSWORD = (process.env.ADMIN_PASSWORD).toUpperCase(); // Convert to uppercase
 
 app.use(bodyParser.json());
 app.use(cors({
