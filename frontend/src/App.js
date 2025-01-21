@@ -205,6 +205,11 @@ const handleDigitInput = (e, index) => {
                         ))}
                         <button onClick={handleSubmit}>🗝</button>
                     </div>
+					<div className="instructions">
+						Answer the questions. The answer to each question is always 1 word or number.
+						<br />
+						From each answer, extract either the <strong>4th letter (word)</strong> or the <strong>last number</strong>.
+					</div>
                     {error && <div className="error-message">{error}</div>}
                 </div>
             )}

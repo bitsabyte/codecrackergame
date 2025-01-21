@@ -199,3 +199,11 @@ body::before {
     color: black;
     border: 1px solid black;
 }
+
+.instructions {
+    margin-top: 20px;
+    font-size: 18px; /* Medium-sized text */
+    color: white; /* Ensure readability against the dark background */
+    text-align: center; /* Center-align the instructions */
+    line-height: 1.5; /* Add spacing between lines */
+}
